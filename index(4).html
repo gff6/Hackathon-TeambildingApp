@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>QuestLog</title>
+
+  <style>
+    /* Change the theme by editing these variables */
+    :root {
+      --bg: #14122b;
+      --card: #201d44;
+      --accent: #f5b83d;
+      --accent-2: #7c5cff;
+      --text: #f2f0ff;
+      --muted: #9b97c4;
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); }
+    main { max-width: 700px; margin: 20px auto; padding: 0 16px; }
+    section { margin-bottom: 40px; }
+    .card { background: var(--card); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+    .muted { color: var(--muted); margin: 4px 0; }
+    button { font: inherit; cursor: pointer; border: none; border-radius: 8px; padding: 8px 14px; background: var(--accent-2); color: white; }
+    button:hover { filter: brightness(1.15); }
+
+    /* ---------- USER PROFILE ---------- */
+    .profile-card { display: flex; gap: 16px; align-items: center; }
+    .avatar {
+      width: 80px; height: 80px; border-radius: 50%;
+      display: grid; place-items: center; font-size: 2.5rem;
+      background: var(--bg); border: 4px solid var(--accent);
+    }
+    .xp-bar { height: 16px; background: var(--bg); border-radius: 8px; overflow: hidden; }
+    .xp-fill { height: 100%; background: var(--accent); }
+    .stats { display: flex; gap: 12px; }
+    .stat { flex: 1; text-align: center; }
+    .stat strong { display: block; font-size: 1.5rem; }
+
+    /* ---------- REWARD PROFILE ---------- */
+    .skin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+    .skin { text-align: center; margin-bottom: 0; }
+    .skin .icon { font-size: 2.5rem; }
+    .skin.locked { opacity: 0.45; }
+    .skin.equipped { outline: 2px solid var(--accent); }
+
+    /* ---------- TEAM NEWSFEED ---------- */
+    .feed-list { list-style: none; padding: 0; }
+    .feed-list li { background: var(--card); border-radius: 12px; padding: 12px; margin-bottom: 10px; }
+    .feed-list small { color: var(--muted); }
+
+    /* ---------- LEADERBOARD ---------- */
+    .toggle { margin-bottom: 12px; }
+    .range { background: var(--card); color: var(--muted); }
+    .range.active { background: var(--accent-2); color: white; }
+    .leaderboard { list-style: none; padding: 0; }
+    .leaderboard li {
+      display: flex; justify-content: space-between;
+      background: var(--card); border-radius: 12px;
+      padding: 12px 16px; margin-bottom: 8px;
+    }
+    .leaderboard li.me { outline: 2px solid var(--accent); }
+    .leaderboard li:nth-child(1) { border-left: 6px solid gold; }
+    .leaderboard li:nth-child(2) { border-left: 6px solid silver; }
+    .leaderboard li:nth-child(3) { border-left: 6px solid #cd7f32; }
+  </style>
+</head>
+
+<body>
+  <main>
+
+    <!-- ===== 1. USER PROFILE ===== -->
+    <section id="profile">
+      <div class="card profile-card">
+        <div id="avatar" class="avatar"></div>
+        <div>
+          <h2 id="name"></h2>
+          <p id="team" class="muted"></p>
+          <p id="level"></p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="xp-bar"><div id="xp-fill" class="xp-fill"></div></div>
+        <p id="xp-text" class="muted"></p>
+      </div>
+
+      <div class="card stats">
+        <div class="stat"><strong id="tasks"></strong><span class="muted">Tasks done</span></div>
+        <div class="stat"><strong id="streak"></strong><span class="muted">Day streak</span></div>
+        <div class="stat"><strong id="badges"></strong><span class="muted">Badges</span></div>
+      </div>
+    </section>
+
+    <!-- ===== 2. REWARD PROFILE ===== -->
+    <section id="rewards">
+      <h2>Skins &amp; Rewards</h2>
+      <p class="muted">Level up to unlock new skins.</p>
+      <div id="skin-grid" class="skin-grid"></div>
+    </section>
+
+    <!-- ===== 3. TEAM NEWSFEED ===== -->
+    <section id="feed">
+      <h2>Team Feed</h2>
+      <ul id="feed-list" class="feed-list"></ul>
+    </section>
+
+    <!-- ===== 4. LEADERBOARD ===== -->
+    <section id="leaderboard">
+      <h2>Leaderboard</h2>
+      <div class="toggle">
+        <button class="range active" data-range="weeklyXp">This week</button>
+        <button class="range" data-range="xp">All time</button>
+      </div>
+      <ol id="leaderboard-list" class="leaderboard"></ol>
+    </section>
+
+  </main>
+
+  <script>
+    // Each block below belongs to one component and starts with its mock data.
+    // Replace the mock data with real data from your backend later.
+
+    // ========== 1. USER PROFILE ==========
+    const profile = {
+      name: "You",
+      team: "Study Squad",
+      avatar: "🧙",
+      xp: 245,
+      tasksDone: 18,
+      streak: 4,
+      badges: 3,
+    };
+
+    const XP_PER_LEVEL = 100; // every 100 XP = 1 level
+    const profileLevel = Math.floor(profile.xp / XP_PER_LEVEL) + 1;
+    const xpInLevel = profile.xp % XP_PER_LEVEL;
+
+    document.getElementById("avatar").textContent = profile.avatar;
+    document.getElementById("name").textContent = profile.name;
+    document.getElementById("team").textContent = "Team: " + profile.team;
+    document.getElementById("level").textContent = "Level " + profileLevel;
+    document.getElementById("xp-fill").style.width = xpInLevel + "%";
+    document.getElementById("xp-text").textContent = `${xpInLevel} / ${XP_PER_LEVEL} XP to next level`;
+    document.getElementById("tasks").textContent = profile.tasksDone;
+    document.getElementById("streak").textContent = profile.streak;
+    document.getElementById("badges").textContent = profile.badges;
+
+
+    // ========== 2. REWARD PROFILE ==========
+    let equippedId = "default";
+
+    const skins = [
+      { id: "default", name: "Rookie", icon: "🙂", level: 1 },
+      { id: "knight",  name: "Knight", icon: "🛡️", level: 2 },
+      { id: "wizard",  name: "Wizard", icon: "🧙", level: 3 },
+      { id: "dragon",  name: "Dragon", icon: "🐉", level: 5 },
+      { id: "legend",  name: "Legend", icon: "👑", level: 8 },
+    ];
+
+    // Draws every skin card. Call it again whenever the data changes.
+    function renderSkins() {
+      document.getElementById("skin-grid").innerHTML = skins.map((skin) => {
+        const locked = profileLevel < skin.level; // uses the level from the profile above
+        const equipped = skin.id === equippedId;
+
+        let status = "Unlocked";
+        if (locked) status = "🔒 Level " + skin.level;
+        if (equipped) status = "Equipped";
+
+        return `
+          <div class="card skin ${locked ? "locked" : ""} ${equipped ? "equipped" : ""}">
+            <div class="icon">${skin.icon}</div>
+            <strong>${skin.name}</strong>
+            <p class="muted">${status}</p>
+            ${locked || equipped ? "" : `<button data-skin="${skin.id}">Equip</button>`}
+          </div>`;
+      }).join("");
+    }
+
+    // One click listener on the grid handles every Equip button
+    document.getElementById("skin-grid").addEventListener("click", (event) => {
+      if (event.target.dataset.skin) {
+        equippedId = event.target.dataset.skin;
+        renderSkins();
+      }
+    });
+
+    renderSkins();
+
+
+    // ========== 3. TEAM NEWSFEED ==========
+    const posts = [
+      { user: "Mia",   icon: "🎓", text: "completed an assignment (+25 XP)", time: "10 min ago" },
+      { user: "Jonas", icon: "🎉", text: "reached Level 3",                  time: "1 h ago" },
+      { user: "Ali",   icon: "🔥", text: "is on a 5 day streak",             time: "3 h ago" },
+      { user: "Lena",  icon: "👑", text: "unlocked the Legend skin",         time: "Yesterday" },
+    ];
+
+    // Escape text so nobody can inject HTML into the page
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    document.getElementById("feed-list").innerHTML = posts.map((post) => `
+      <li>
+        ${post.icon} <strong>${escapeHtml(post.user)}</strong> ${escapeHtml(post.text)}<br>
+        <small>${post.time}</small>
+      </li>
+    `).join("");
+
+
+    // ========== 4. LEADERBOARD ==========
+    // "isMe" highlights the current user's row.
+    const leaderboardUsers = [
+      { name: "You",   xp: 245, weeklyXp: 60,  isMe: true },
+      { name: "Mia",   xp: 340, weeklyXp: 90 },
+      { name: "Jonas", xp: 210, weeklyXp: 150 },
+      { name: "Lena",  xp: 80,  weeklyXp: 40 },
+      { name: "Ali",   xp: 275, weeklyXp: 20 },
+    ];
+
+    let range = "weeklyXp"; // "weeklyXp" or "xp" (all time)
+
+    function renderLeaderboard() {
+      // [...leaderboardUsers] copies the array so sorting doesn't change the original
+      const sorted = [...leaderboardUsers].sort((a, b) => b[range] - a[range]);
+      const medals = ["🥇", "🥈", "🥉"];
+
+      document.getElementById("leaderboard-list").innerHTML = sorted.map((user, i) => `
+        <li class="${user.isMe ? "me" : ""}">
+          <span>${medals[i] || (i + 1) + "."} ${user.name}</span>
+          <strong>${user[range]} XP</strong>
+        </li>
+      `).join("");
+    }
+
+    // Weekly / all-time buttons
+    document.querySelectorAll(".range").forEach((button) => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll(".range").forEach((b) => b.classList.remove("active"));
+        button.classList.add("active");
+        range = button.dataset.range;
+        renderLeaderboard();
+      });
+    });
+
+    renderLeaderboard();
+  </script>
+</body>
+</html>
