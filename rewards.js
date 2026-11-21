@@ -9,6 +9,7 @@ const skins = [
   { id: "wizard",  name: "Wizard", icon: "🧙", level: 3 },
   { id: "dragon",  name: "Dragon", icon: "🐉", level: 5 },
   { id: "legend",  name: "Legend", icon: "👑", level: 8 },
+  { id: "darklord", name: "Dark Lord", icon "😈", level 10},
 ];
 
 // Draws every skin card. Call it again whenever the data changes.
