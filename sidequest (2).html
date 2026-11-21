@@ -1,0 +1,5426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>sidequest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+:root {
+  --bg-app: #f7f7fb;
+  --bg-surface: #ffffff;
+  --bg-subtle: #f4f3fa;
+  --bg-lavender-soft: #eeeafd;
+  --bg-sage-soft: #e9f3e4;
+  --bg-amber-soft: #fbf4e2;
+  --bg-dark: #2a2438;
+  --border-subtle: #e6e4ef;
+  --border-strong: #d5d1e6;
+  --text-main: #18181f;
+  --text-muted: #676675;
+  --text-light-muted: #c5c0d6;
+  --accent: #6c47ff;
+  --accent-hover: #5833eb;
+  --accent-soft: #f0ecff;
+  --green: #1f8a4c;
+  --warn: #b45309;
+  --danger: #b91c1c;
+  --radius-lg: 14px;
+  --radius-md: 10px;
+  --radius-sm: 8px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  min-height: 100%;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 14px;
+  color: var(--text-main);
+  background: var(--bg-app);
+  -webkit-font-smoothing: antialiased;
+}
+
+.sq-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Sidebar */
+.sq-sidebar {
+  width: 214px;
+  flex-shrink: 0;
+  background: var(--bg-surface);
+  border-right: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  padding: 20px 14px 18px;
+}
+
+.sq-logo-wrap {
+  padding: 0 8px 18px;
+}
+
+.sq-logo {
+  text-decoration: none;
+  font-size: 23px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--accent);
+}
+
+.sq-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sq-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 12px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: #484754;
+  font-size: 13.5px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.14s ease, color 0.14s ease;
+}
+
+.sq-nav-item:hover {
+  background: var(--bg-subtle);
+  color: var(--text-main);
+}
+
+.sq-nav-item.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.sq-nav-icon {
+  font-size: 14px;
+  width: 18px;
+  text-align: center;
+}
+
+.sq-nav-pill {
+  margin-left: auto;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 999px;
+}
+
+.sq-sidebar-context {
+  margin-top: 18px;
+}
+
+.sq-crew-box {
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+}
+
+.sq-crew-box-title {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  margin-bottom: 3px;
+}
+
+.sq-user-footer {
+  margin-top: auto;
+  padding: 14px 8px 0;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.sq-user-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.sq-user-sub {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* Main Content */
+.sq-main {
+  flex: 1;
+  min-width: 0;
+  padding: 28px 32px 44px;
+}
+
+.sq-view {
+  display: none;
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+.sq-view.active {
+  display: block;
+}
+
+.sq-page-header {
+  margin-bottom: 22px;
+}
+
+.sq-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.sq-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sq-page-title {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: var(--text-main);
+}
+
+.sq-page-subtitle {
+  color: var(--text-muted);
+  font-size: 13.5px;
+  margin-top: 4px;
+}
+
+/* Grids & Cards */
+.sq-dashboard-grid,
+.sq-party-layout,
+.sq-workshop-grid,
+.sq-library-layout,
+.sq-quest-detail-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.85fr) minmax(300px, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.sq-rewards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.sq-col-main,
+.sq-col-side {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sq-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+}
+
+.sq-card-head-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.sq-card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+/* Buttons */
+.sq-btn-primary {
+  background: var(--accent);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 9px 15px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.14s ease, opacity 0.14s ease;
+}
+
+.sq-btn-primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.sq-btn-secondary {
+  background: var(--bg-lavender-soft);
+  color: var(--accent);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 9px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sq-btn-secondary:hover:not(:disabled) {
+  background: #e2dcfb;
+}
+
+.sq-btn-light {
+  background: #ffffff;
+  color: var(--bg-dark);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 9px 14px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.sq-btn-sm {
+  padding: 7px 12px;
+  font-size: 12px;
+}
+
+.sq-btn-block {
+  width: 100%;
+}
+
+button:disabled,
+input:disabled {
+  opacity: 0.48;
+  cursor: not-allowed;
+}
+
+.sq-btn-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.sq-link-btn {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sq-link-btn:hover {
+  text-decoration: underline;
+}
+
+/* Game End Banner */
+.sq-game-over-banner {
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.sq-game-over-banner.victory {
+  background: #dcfce7;
+  color: #14532d;
+  border: 1px solid #86efac;
+}
+
+.sq-game-over-banner.defeat {
+  background: #fee2e2;
+  color: #7f1d1d;
+  border: 1px solid #fca5a5;
+}
+
+/* Dashboard Level Banner */
+.sq-level-banner {
+  background: var(--bg-dark);
+  color: #ffffff;
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  display: flex;
+  gap: 18px;
+  align-items: center;
+}
+
+.sq-level-badge {
+  width: 66px;
+  height: 66px;
+  border-radius: 12px;
+  background: #b8e986;
+  color: #182210;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sq-level-kicker {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.sq-level-num {
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1.05;
+}
+
+.sq-level-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.sq-level-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.sq-level-title {
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.sq-level-desc {
+  font-size: 12.5px;
+  color: var(--text-light-muted);
+}
+
+.sq-level-target {
+  font-size: 12px;
+  color: var(--text-light-muted);
+}
+
+.sq-xp-meta {
+  font-size: 11.5px;
+  color: var(--text-light-muted);
+  margin: 10px 0 6px;
+}
+
+.sq-xp-track {
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  overflow: hidden;
+}
+
+.sq-card .sq-xp-track,
+.sq-rewards-grid .sq-xp-track {
+  background: var(--bg-subtle);
+}
+
+.sq-xp-fill {
+  height: 100%;
+  background: #a5e06b;
+  border-radius: 999px;
+  transition: width 0.25s ease;
+}
+
+.sq-level-footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11.5px;
+  color: var(--text-light-muted);
+  margin-top: 8px;
+}
+
+/* Auto Daily Banner */
+.sq-auto-banner {
+  background: var(--bg-lavender-soft);
+  border: 1px solid #dcd5f9;
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+}
+
+.sq-auto-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.sq-auto-title {
+  font-weight: 700;
+  color: var(--accent);
+  font-size: 14px;
+}
+
+.sq-auto-tag {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+}
+
+.sq-auto-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.sq-auto-input {
+  flex: 1;
+  background: #ffffff;
+  border: 1px solid #dad4f5;
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  font-size: 13px;
+  color: #363542;
+}
+
+.sq-auto-footnote {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  margin-top: 8px;
+}
+
+/* Today's Quests */
+.sq-section-block {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sq-section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sq-section-title {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.sq-section-count {
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+
+.sq-quest-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.sq-quest-card.featured {
+  border-color: #cfc6f8;
+}
+
+.sq-quest-card.completed {
+  opacity: 0.72;
+}
+
+.sq-quest-main {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.sq-quest-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--bg-lavender-soft);
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.sq-quest-info {
+  flex: 1;
+}
+
+.sq-quest-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sq-quest-title {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.sq-quest-title.struck {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+.sq-xp-gain {
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 12.5px;
+}
+
+.sq-xp-muted {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.sq-quest-meta,
+.sq-quest-source {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 3px;
+}
+
+.sq-quest-tags-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.sq-quest-mode {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.03em;
+}
+
+.sq-quest-due {
+  font-size: 11.5px;
+  color: var(--warn);
+  font-weight: 600;
+}
+
+.sq-quest-action-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.sq-quest-subnotes {
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+
+.sq-diff-pill {
+  background: var(--bg-subtle);
+  color: #4b4958;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.sq-checkbox {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  border: 1.5px solid var(--border-strong);
+  background: #ffffff;
+  cursor: pointer;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.sq-checkbox.checked {
+  background: #9ad47e;
+  border-color: #7bb95e;
+  color: #16230f;
+  font-size: 11px;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+}
+
+/* Character & Party Cards */
+.sq-pill-soft {
+  background: var(--bg-sage-soft);
+  color: var(--green);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+}
+
+.sq-avatar-stage {
+  background: var(--bg-lavender-soft);
+  border-radius: var(--radius-md);
+  height: 152px;
+  display: grid;
+  place-items: center;
+  margin: 12px 0;
+}
+
+.sq-seg-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  background: var(--bg-subtle);
+  padding: 3px;
+  border-radius: var(--radius-sm);
+  gap: 3px;
+}
+
+.sq-seg-btn {
+  border: none;
+  background: transparent;
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.sq-seg-btn.active {
+  background: var(--bg-lavender-soft);
+  color: var(--accent);
+}
+
+.sq-color-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 12px 0;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.sq-swatches {
+  display: flex;
+  gap: 8px;
+}
+
+.sq-swatch {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+}
+
+.sq-swatch.active {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.sq-party-subrow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11.5px;
+  margin: 10px 0 8px;
+}
+
+.sq-party-crew {
+  font-weight: 600;
+  color: #353442;
+}
+
+.sq-party-period {
+  color: var(--text-muted);
+  font-size: 10.5px;
+  font-weight: 700;
+}
+
+.sq-leaderboard {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sq-lb-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-subtle);
+  font-size: 12.5px;
+}
+
+.sq-lb-row.highlight {
+  background: var(--bg-lavender-soft);
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.sq-lb-rank {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-right: 8px;
+}
+
+.sq-lb-name {
+  flex: 1;
+}
+
+.sq-lb-note {
+  font-size: 11.5px;
+  color: var(--accent);
+  margin-top: 8px;
+}
+
+.sq-hp-card {
+  background: var(--bg-sage-soft);
+  border: 1px solid #d4e7ca;
+  border-radius: var(--radius-lg);
+  padding: 15px 18px;
+}
+
+.sq-hp-top,
+.sq-hp-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+}
+
+.sq-hp-bottom {
+  margin-top: 6px;
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+
+/* Party Board */
+.sq-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.sq-kpi-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+}
+
+.sq-kpi-num {
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.sq-kpi-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.sq-filter-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.sq-pill-btn {
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+  border-radius: 999px;
+  padding: 6px 13px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #464554;
+  cursor: pointer;
+}
+
+.sq-pill-btn.active {
+  background: var(--bg-lavender-soft);
+  border-color: #d6cff7;
+  color: var(--accent);
+}
+
+.sq-crew-top-tag {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+
+.sq-crew-top-tag.green {
+  color: var(--green);
+}
+
+.sq-pending-right {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.sq-crew-body {
+  display: flex;
+  gap: 14px;
+}
+
+.sq-crew-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--bg-subtle);
+  display: grid;
+  place-items: center;
+  font-size: 19px;
+  flex-shrink: 0;
+}
+
+.sq-crew-content {
+  flex: 1;
+}
+
+.sq-crew-title-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.sq-crew-title-line h3 {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.sq-badge-gray {
+  background: var(--bg-subtle);
+  color: #535262;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+.sq-badge-purple {
+  background: var(--bg-lavender-soft);
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+.sq-crew-desc {
+  font-size: 12.5px;
+  color: #444352;
+  margin-top: 8px;
+  line-height: 1.45;
+}
+
+.sq-crew-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  gap: 10px;
+}
+
+.sq-rating-quest-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--accent);
+  margin: 8px 0 4px;
+}
+
+.sq-rating-block {
+  margin-top: 14px;
+}
+
+.sq-rating-label-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.sq-scale-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.sq-scale-btn {
+  padding: 7px 0;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-subtle);
+  border-radius: 7px;
+  font-weight: 700;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+
+.sq-scale-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #ffffff;
+}
+
+.sq-scale-ends {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10.5px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.sq-dark-card {
+  background: var(--bg-dark);
+  color: #ffffff;
+  border-radius: var(--radius-lg);
+  padding: 18px;
+}
+
+.sq-dark-card-title {
+  font-size: 14.5px;
+  font-weight: 700;
+}
+
+.sq-dark-muted {
+  font-size: 12px;
+  color: var(--text-light-muted);
+  margin-top: 8px;
+  line-height: 1.45;
+}
+
+.sq-dark-highlight {
+  font-size: 12px;
+  font-weight: 600;
+  color: #ffffff;
+  margin-top: 8px;
+}
+
+.sq-dark-top-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-light-muted);
+}
+
+.sq-dark-xp {
+  color: #b59bff;
+  font-size: 13px;
+}
+
+/* Workshop */
+.sq-step-label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.sq-draft-tag {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.sq-level-picker {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 12px 0 20px;
+}
+
+.sq-level-option {
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 14px;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sq-level-option.active {
+  background: var(--bg-lavender-soft);
+  border-color: var(--accent);
+}
+
+.sq-opt-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: var(--bg-subtle);
+  display: grid;
+  place-items: center;
+  font-size: 17px;
+}
+
+.sq-opt-title {
+  font-weight: 700;
+  font-size: 13.5px;
+}
+
+.sq-opt-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.35;
+}
+
+.sq-opt-foot {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: auto;
+  padding-top: 4px;
+}
+
+.sq-opt-foot.selected-foot {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.sq-form-row-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.sq-form-row-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.sq-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.sq-field-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #363544;
+}
+
+.sq-input,
+.sq-textarea {
+  width: 100%;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 9px 11px;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--text-main);
+  background: #ffffff;
+}
+
+.sq-static-box {
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 8px 11px;
+  font-size: 12.5px;
+  color: #353442;
+}
+
+.sq-source-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-top: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+  margin-top: 14px;
+}
+
+.sq-source-link {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.sq-criteria-block {
+  margin-top: 14px;
+}
+
+.sq-criteria-list {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  font-size: 12.5px;
+  font-weight: 600;
+  margin-top: 6px;
+}
+
+.sq-crew-banner {
+  background: var(--bg-lavender-soft);
+  border-radius: var(--radius-sm);
+  padding: 11px 14px;
+  margin-top: 14px;
+  font-size: 12.5px;
+}
+
+.sq-form-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.sq-setback-box {
+  background: var(--bg-lavender-soft);
+  border-radius: var(--radius-sm);
+  padding: 11px 12px;
+  margin-top: 12px;
+  font-size: 12px;
+}
+
+.sq-setback-box p {
+  color: var(--text-muted);
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+/* Study Library */
+.sq-dropzone {
+  background: var(--bg-lavender-soft);
+  border: 1.5px dashed #b9acef;
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+}
+
+.sq-dropzone-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14.5px;
+}
+
+.sq-dropzone-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.sq-search-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0;
+}
+
+.sq-doc-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sq-doc-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.sq-doc-item.selected {
+  background: #f9f8fe;
+  border-color: #d6cff7;
+}
+
+.sq-doc-badge {
+  font-size: 10px;
+  font-weight: 800;
+  padding: 6px 7px;
+  border-radius: 6px;
+  background: var(--bg-lavender-soft);
+  color: var(--accent);
+}
+
+.sq-doc-info {
+  flex: 1;
+}
+
+.sq-doc-title {
+  font-weight: 700;
+  font-size: 13.5px;
+}
+
+.sq-status-ready {
+  background: var(--bg-sage-soft);
+  color: var(--green);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+}
+
+.sq-status-proc {
+  background: var(--bg-subtle);
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 999px;
+}
+
+.sq-status-warn {
+  background: var(--bg-amber-soft);
+  color: var(--warn);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+}
+
+.sq-doc-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.sq-xp-explain-card {
+  background: var(--bg-lavender-soft);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+}
+
+.sq-xp-cols {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.sq-xp-col-title {
+  font-weight: 700;
+  font-size: 12.5px;
+}
+
+.sq-toggle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+.sq-switch {
+  border: none;
+  border-radius: 999px;
+  padding: 4px 11px;
+  font-size: 11px;
+  font-weight: 800;
+  background: #d7d4e3;
+  color: #3f3e4b;
+  cursor: pointer;
+}
+
+.sq-switch.on {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.sq-preview-header {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.sq-preview-dragon {
+  font-size: 30px;
+}
+
+.sq-qte-box {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  margin: 12px 0;
+}
+
+.sq-qte-timer {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #f6b889;
+}
+
+.sq-qte-prompt {
+  font-size: 12.5px;
+  margin-top: 5px;
+}
+
+.sq-qte-answer {
+  margin-top: 8px;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 6px;
+  padding: 7px 10px;
+  font-size: 12.5px;
+}
+
+/* Battle & Quest Detail Screens */
+.sq-battle-arena {
+  background: var(--bg-dark);
+  color: #ffffff;
+  border-radius: var(--radius-lg);
+  padding: 20px;
+}
+
+.sq-battle-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-light-muted);
+}
+
+.sq-parry-timer {
+  color: #9be082;
+}
+
+.sq-hp-bars {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+  margin-top: 14px;
+}
+
+.sq-hp-names {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+
+.sq-bar-track {
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  overflow: hidden;
+}
+
+.sq-bar-green {
+  height: 100%;
+  background: #a5e06b;
+  transition: width 0.2s ease;
+}
+
+.sq-bar-purple {
+  height: 100%;
+  background: #a48bff;
+  transition: width 0.2s ease;
+}
+
+.sq-arena-stage {
+  margin-top: 16px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.sq-fighter {
+  font-size: 56px;
+}
+
+.sq-strike-box {
+  text-align: center;
+}
+
+.sq-strike-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--text-light-muted);
+}
+
+.sq-strike-val {
+  font-size: 28px;
+  font-weight: 800;
+  color: #b5e880;
+}
+
+.sq-strike-line {
+  color: #9be082;
+  font-weight: 700;
+  margin: 3px 0;
+}
+
+.sq-strike-sub {
+  font-size: 11px;
+  color: var(--text-light-muted);
+}
+
+.sq-battle-foot {
+  font-size: 11.5px;
+  color: var(--text-light-muted);
+  margin-top: 12px;
+}
+
+.sq-format-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.sq-fmt-btn {
+  padding: 7px 10px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--bg-subtle);
+  font-size: 12px;
+  font-weight: 600;
+  color: #484756;
+  cursor: pointer;
+}
+
+.sq-fmt-btn.active {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.sq-evade-banner {
+  background: var(--bg-amber-soft);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  margin-bottom: 14px;
+}
+
+.sq-evade-top {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11.5px;
+  color: var(--warn);
+}
+
+.sq-timer-num {
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+}
+
+.sq-evade-bar {
+  height: 6px;
+  border-radius: 999px;
+  background: #ead9be;
+  margin: 7px 0;
+  overflow: hidden;
+}
+
+.sq-evade-fill {
+  height: 100%;
+  background: #e39b57;
+  transition: width 0.08s linear;
+}
+
+.sq-question-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.sq-reply-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.sq-kv-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
+  font-size: 12.5px;
+}
+
+.sq-kv-list > div {
+  display: flex;
+  justify-content: space-between;
+}
+
+.sq-kv-list span {
+  color: var(--text-muted);
+}
+
+.sq-info-purple {
+  background: var(--bg-lavender-soft);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+  font-size: 12.5px;
+}
+
+/* Balloon Barrage */
+.sq-balloon-stage {
+  background: #e9f2f7;
+  border: 1px solid #d5e4ed;
+  border-radius: var(--radius-lg);
+  padding: 20px;
+}
+
+.sq-balloon-top,
+.sq-balloon-foot {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.sq-balloon-arena {
+  margin: 14px 0;
+  min-height: 220px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(180deg, #e2eef6 0%, #dce7dc 75%, #c7d5c2 75%, #b5c6b0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 18px;
+  gap: 10px;
+}
+
+.sq-balloon {
+  width: 82px;
+  height: 104px;
+  border-radius: 50% 50% 45% 45%;
+  border: 1.5px solid #484654;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #24232e;
+  cursor: pointer;
+  transition: transform 0.14s ease;
+}
+
+.sq-balloon:hover {
+  transform: translateY(-4px);
+}
+
+.sq-balloon.b-purple {
+  background: #c7b6f2;
+}
+
+.sq-balloon.b-green {
+  background: #b9d7b8;
+}
+
+.sq-balloon.b-amber {
+  background: #e7be8a;
+}
+
+.sq-feedback-card {
+  background: var(--bg-sage-soft);
+  border: 1px solid #d4e7ca;
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+}
+
+.sq-feedback-title {
+  color: var(--green);
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+/* Labyrinth */
+.sq-maze-card {
+  background: #23382b;
+  color: #ffffff;
+  border-radius: var(--radius-lg);
+  padding: 20px;
+}
+
+.sq-maze-top,
+.sq-maze-foot {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11.5px;
+}
+
+.sq-maze-sub {
+  font-size: 12px;
+  color: #b7c9bd;
+  margin-top: 4px;
+}
+
+.sq-maze-viewport {
+  position: relative;
+  height: 220px;
+  margin: 14px 0;
+  border-radius: var(--radius-md);
+  background: radial-gradient(circle at 50% 48%, #9ea98e 0%, #5c6d59 38%, #26392c 72%);
+  overflow: hidden;
+}
+
+.sq-maze-corridor-h {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 86px;
+  height: 54px;
+  background: rgba(215, 219, 196, 0.45);
+}
+
+.sq-maze-corridor-v {
+  position: absolute;
+  top: 40px;
+  bottom: 0;
+  left: 45%;
+  width: 66px;
+  background: rgba(215, 219, 196, 0.55);
+}
+
+.sq-maze-marker-x {
+  position: absolute;
+  right: 33%;
+  top: 76px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #d88d3c;
+  color: #261909;
+  font-weight: 800;
+  font-size: 12px;
+  display: grid;
+  place-items: center;
+}
+
+.sq-maze-player {
+  position: absolute;
+  left: 48%;
+  bottom: 26px;
+  color: #ffffff;
+  font-size: 20px;
+}
+
+.sq-maze-warn {
+  color: #f3b562;
+  font-weight: 700;
+}
+
+.sq-choices-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.sq-choice-card {
+  border: 1.5px solid var(--border-subtle);
+  background: var(--bg-surface);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sq-choice-card.selected {
+  background: var(--bg-lavender-soft);
+  border-color: var(--accent);
+}
+
+.sq-choice-dir {
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+
+.sq-choice-val {
+  font-size: 14px;
+}
+
+.sq-alert-amber {
+  background: var(--bg-amber-soft);
+  color: var(--warn);
+  font-size: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  margin-top: 12px;
+}
+
+/* Socrates */
+.sq-socrates-panel {
+  background: var(--bg-amber-soft);
+  border: 1px solid #efe2be;
+  border-radius: var(--radius-lg);
+  padding: 20px;
+}
+
+.sq-socrates-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sq-socrates-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sq-socrates-avatar {
+  font-size: 26px;
+}
+
+.sq-amber-bold {
+  color: var(--warn);
+  font-weight: 800;
+  font-size: 12.5px;
+}
+
+.sq-dialogue-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.sq-bubble {
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.sq-bubble.socrates {
+  background: #ffffff;
+  border: 1px solid #ebe0c2;
+}
+
+.sq-bubble.user {
+  background: var(--bg-lavender-soft);
+  border: 1px solid #dcd5f9;
+}
+
+.sq-bubble-role {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.sq-checklist {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-top: 10px;
+  font-size: 12.5px;
+}
+
+.sq-checklist li.done {
+  color: var(--green);
+  font-weight: 600;
+}
+
+/* Duel Match */
+.sq-fairness-box {
+  background: var(--bg-sage-soft);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  margin-top: 12px;
+  font-size: 12px;
+}
+
+/* Helpers & Toast */
+.sq-muted-sm {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+.sq-muted-xs {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.sq-accent-sm {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.sq-accent-xs {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.sq-green-xs {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--green);
+  margin-top: 3px;
+}
+
+.sq-kicker-xs {
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.sq-warn-text {
+  color: var(--warn);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.sq-link-sm {
+  color: var(--accent);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.sq-link-inline {
+  color: var(--accent);
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.sq-mt-xs { margin-top: 6px; }
+.sq-mt-sm { margin-top: 10px; }
+.sq-mt-md { margin-top: 16px; }
+
+.sq-reward-progress {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  margin-top: 14px;
+}
+
+.sq-toast {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  background: var(--bg-dark);
+  color: #ffffff;
+  padding: 11px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 12.5px;
+  font-weight: 600;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(8px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 999;
+}
+
+.sq-toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Additional interactive states for multi-round quests & Quests hub */
+.sq-quest-hub-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.sq-option-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+.sq-option-btn {
+  text-align: left;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border-subtle);
+  background: var(--bg-surface);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.14s ease;
+}
+.sq-option-btn:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: var(--bg-lavender-soft);
+}
+.sq-option-btn.selected {
+  border-color: var(--accent);
+  background: var(--bg-lavender-soft);
+  color: var(--accent);
+}
+.sq-balloon.popped {
+  opacity: 0.28;
+  pointer-events: none;
+  transform: scale(0.9);
+}
+
+@media (max-width: 1024px) {
+  .sq-dashboard-grid,
+  .sq-party-layout,
+  .sq-workshop-grid,
+  .sq-library-layout,
+  .sq-quest-detail-grid,
+  .sq-rewards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sq-level-picker {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .sq-quest-hub-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .sq-shell {
+    flex-direction: column;
+  }
+
+  .sq-sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .sq-main {
+    padding: 18px 16px 36px;
+  }
+
+  .sq-level-picker,
+  .sq-form-row-2,
+  .sq-form-row-3,
+  .sq-choices-3,
+  .sq-xp-cols {
+    grid-template-columns: 1fr;
+  }
+}
+  
+/* ===== Profile / Rewards / Team feed / Leaderboards (from index + style.css, scoped under .ix) ===== */
+.ix{
+  --bg: #f7f6fa;          
+  --card: #ffffff;
+  --line: #e8e5f0;        
+  --text: #222129;
+  --muted: #77738a;
+  --purple: #6444d8;      
+  --purple-soft: #efeafc; 
+  --dark: #35264f;        
+  --lime: #d8f58a;        
+  --green-soft: #ecf3df;  
+  --green: #6a9a3a;
+  --orange: #c0772b;      
+  --gold: #e3b347;
+  --radius: 14px;
+}
+.ix h1{ font-size: 28px; margin: 0 0 4px; }
+.ix h2{ font-size: 20px; margin: 0 0 12px; }
+.ix h3{ font-size: 15px; margin: 0 0 12px; }
+.ix p{ margin: 0; }
+.ix button{ font: inherit; cursor: pointer; }
+.ix .muted{ color: var(--muted); }
+.ix .small{ font-size: 12px; }
+.ix .page-head{ display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+.ix .grid-2{ display: grid; grid-template-columns: 1fr 340px; gap: 20px; align-items: start; }
+.ix .grid-3{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.ix .stack{ display: flex; flex-direction: column; gap: 20px; }
+.ix .row{ display: flex; align-items: center; gap: 12px; }
+.ix .spread{ display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.ix .card{
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+.ix .card.dark{ background: var(--dark); color: #fff; border: none; }
+.ix .card.dark .muted{ color: #c9c0dd; }
+.ix .card.soft{ background: var(--purple-soft); border-color: #ddd3f7; }
+.ix .card.hp{ background: var(--green-soft); border-color: #dbe7c6; }
+.ix .btn{
+  border: none;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-weight: 600;
+  background: var(--purple);
+  color: #fff;
+}
+.ix .btn:hover{ filter: brightness(1.08); }
+.ix .btn.light{ background: var(--purple-soft); color: var(--purple); }
+.ix .btn.white{ background: #fff; color: var(--purple); }
+.ix .btn.block{ width: 100%; }
+.ix .btn:disabled{ opacity: .5; cursor: not-allowed; filter: none; }
+.ix .chips{ display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.ix .chip{
+  border: 1px solid var(--line);
+  background: #fff;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.ix .chip.on{ background: var(--purple-soft); color: var(--purple); border-color: transparent; font-weight: 600; }
+.ix .tag{ font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 6px; background: var(--purple-soft); color: var(--purple); white-space: nowrap; }
+.ix .xp{ color: var(--purple); font-weight: 700; white-space: nowrap; }
+.ix .bar{ height: 8px; border-radius: 99px; background: rgba(0,0,0,.08); overflow: hidden; }
+.ix .bar span{ display: block; height: 100%; background: var(--purple); border-radius: 99px; }
+.ix .bar.lime{ background: rgba(255,255,255,.15); }
+.ix .bar.lime span{ background: var(--lime); }
+.ix .bar.green span{ background: var(--green); }
+.ix .lvl{
+  width: 56px; height: 56px;
+  background: var(--lime); color: var(--dark);
+  border-radius: 12px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 22px; line-height: 1;
+}
+.ix .lvl small{ font-size: 9px; letter-spacing: 1px; }
+.ix .hero-title{ font-size: 20px; font-weight: 700; }
+.ix .stats{ display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.ix .stat b{ display: block; font-size: 22px; margin-bottom: 2px; }
+.ix .avatar-box{ background: var(--purple-soft); border-radius: 12px; display: flex; justify-content: center; padding: 12px; margin-bottom: 12px; }
+.ix .avatar{ width: 140px; height: 160px; }
+.ix .tabs{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 12px; }
+.ix .tabs .chip{ border-radius: 8px; text-align: center; }
+.ix .swatch{ width: 26px; height: 26px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 0 1px var(--line); }
+.ix .swatch.on{ box-shadow: 0 0 0 2px var(--purple); }
+.ix .shop{ display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; }
+.ix .item{ border: 1px solid var(--line); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.ix .item .avatar{ width: 100%; height: 110px; background: var(--bg); border-radius: 8px; }
+.ix .item.equipped{ border-color: var(--purple); }
+.ix .road{ display: flex; gap: 8px; overflow-x: auto; }
+.ix .road-step{ flex: 1; min-width: 110px; border-radius: 10px; padding: 10px; background: var(--bg); font-size: 12px; }
+.ix .road-step b{ display: block; font-size: 13px; margin-bottom: 4px; }
+.ix .road-step.done{ background: var(--purple-soft); color: var(--purple); }
+.ix .road-step.next{ outline: 2px dashed var(--purple); }
+.ix .badges{ display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+.ix .badge{ border-radius: 12px; padding: 12px; background: var(--bg); text-align: center; }
+.ix .badge .icon{ font-size: 26px; }
+.ix .badge.locked{ opacity: .45; filter: grayscale(1); }
+.ix .composer textarea{
+  width: 100%; min-height: 70px; resize: vertical;
+  border: 1px solid var(--line); border-radius: 10px; padding: 10px;
+  font: inherit; margin-bottom: 10px;
+}
+.ix .post{ display: flex; gap: 12px; }
+.ix .post + .post{ border-top: 1px solid var(--line); padding-top: 16px; margin-top: 16px; }
+.ix .post-body{ flex: 1; min-width: 0; }
+.ix .kudos{ border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 4px 10px; font-size: 12px; color: var(--muted); }
+.ix .kudos.on{ background: var(--purple-soft); color: var(--purple); border-color: transparent; }
+.ix .face{
+  width: 38px; height: 38px; flex-shrink: 0;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 13px; color: #fff;
+}
+.ix .podium{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; align-items: end; margin-bottom: 20px; }
+.ix .podium .card{ text-align: center; }
+.ix .podium .face{ margin: 0 auto 8px; width: 48px; height: 48px; }
+.ix .podium .first{ padding-top: 32px; border: 2px solid var(--gold); }
+.ix .lb-row{ display: grid; grid-template-columns: 36px 38px 1fr 80px 90px; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; }
+.ix .lb-row.you{ background: var(--purple-soft); color: var(--purple); font-weight: 600; }
+.ix .lb-rank{ color: var(--muted); font-weight: 600; }
+@media (max-width: 900px){.ix .grid-2,.ix .grid-3{ grid-template-columns: 1fr; }
+.ix .stats{ grid-template-columns: repeat(2, 1fr); }
+.ix .lb-row{ grid-template-columns: 28px 38px 1fr 70px; }
+.ix .lb-row .hide-sm{ display: none; }}
+.sq-game-over-banner.victory{background:#e9f3e4;color:#1f6b3a;border:1px solid #bfe0c9}
+.sq-game-over-banner.defeat{background:#fde8e8;color:#b91c1c;border:1px solid #f5bcbc}
+.sq-game-over-banner{padding:12px 14px;border-radius:10px;margin-top:12px;font-weight:600}
+.ix .avatar-box .avatar{margin:0 auto}
+
+
+/* ===== Peer rating: which quest + locked state ===== */
+.sq-rate-picker{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.sq-rate-target{display:flex;gap:10px;align-items:center;background:var(--accent-soft);border:1px solid #ddd3f7;border-radius:10px;padding:10px 12px;margin-bottom:10px}
+.sq-rate-target-icon{font-size:24px}
+.sq-scale-btn:disabled{opacity:.55;cursor:not-allowed}
+.sq-textarea:disabled{background:#f4f3fa;color:#676675;cursor:not-allowed}
+#btn-submit-rating:disabled{opacity:.6;cursor:not-allowed}
+.ix .msg-bubble{background:var(--purple-soft);border-radius:4px 12px 12px 12px;padding:8px 12px;margin-top:6px;display:inline-block;max-width:100%;white-space:pre-wrap;word-break:break-word}
+.ix .post-quote{margin:6px 0 0;padding:6px 10px;border-left:3px solid var(--purple);background:var(--bg);border-radius:0 8px 8px 0;font-size:13px;white-space:pre-wrap;word-break:break-word}
+.ix .composer textarea{font-family:inherit}
+  </style>
+</head>
+<body>
+  <div class="sq-shell">
+    <!-- Left Sidebar -->
+    <aside class="sq-sidebar" aria-label="Primary navigation">
+      <div class="sq-logo-wrap">
+        <a href="#" class="sq-logo" data-nav="today">sidequest</a>
+      </div>
+
+      <nav class="sq-nav">
+        <button class="sq-nav-item active" data-nav="today">
+          <span class="sq-nav-icon">⊞</span>
+          <span>Today</span>
+        </button>
+        <button class="sq-nav-item" data-nav="quests">
+          <span class="sq-nav-icon">☐</span>
+          <span>Quests</span>
+        </button>
+        <button class="sq-nav-item" data-nav="library">
+          <span class="sq-nav-icon">▤</span>
+          <span>Study library</span>
+        </button>
+        <button class="sq-nav-item" data-nav="party">
+          <span class="sq-nav-icon">👥</span>
+          <span>Party</span>
+          <span class="sq-nav-pill" id="party-pending-badge">1</span>
+        </button>
+        <button class="sq-nav-item" data-nav="duels">
+          <span class="sq-nav-icon">⚔</span>
+          <span>Duels</span>
+        </button>
+        <button class="sq-nav-item" data-nav="rewards">
+          <span class="sq-nav-icon">🎁</span>
+          <span>Rewards</span>
+        </button>
+        <button class="sq-nav-item" data-nav="profile"><span class="sq-nav-icon">🧑</span><span>Profile</span></button>
+        <button class="sq-nav-item" data-nav="feed"><span class="sq-nav-icon">💬</span><span>Team feed</span></button>
+        <button class="sq-nav-item" data-nav="leaderboard"><span class="sq-nav-icon">🏆</span><span>Leaderboards</span></button>
+      </nav>
+
+      <div id="sq-sidebar-context" class="sq-sidebar-context"></div>
+
+      <div class="sq-user-footer">
+        <div class="sq-user-name">Alex Morgan</div>
+        <div class="sq-user-sub" id="sidebar-level-sub">Knowledge seeker · Level 12</div>
+        <div class="sq-muted-xs sq-mt-xs" id="backend-sync-status">● Syncing with backend...</div>
+      </div>
+    </aside>
+
+    <!-- Main View Container -->
+    <main class="sq-main">
+      <!-- SCREEN 1: TODAY DASHBOARD -->
+      <section id="view-today" class="sq-view active">
+        <header class="sq-page-header sq-header-row">
+          <div>
+            <h1 class="sq-page-title">Ready, Alex?</h1>
+            <p class="sq-page-subtitle">Make a commitment. Turn studying into an adventure.</p>
+          </div>
+          <div class="sq-header-actions">
+            <button class="sq-btn-icon" id="btn-notify" title="Notifications">🔔</button>
+            <button class="sq-btn-primary" data-nav="workshop">+ New quest</button>
+          </div>
+        </header>
+
+        <div class="sq-dashboard-grid">
+          <div class="sq-col-main">
+            <!-- Dark Level Banner -->
+            <div class="sq-level-banner">
+              <div class="sq-level-badge">
+                <span class="sq-level-kicker">LVL</span>
+                <span class="sq-level-num" id="dash-level">12</span>
+              </div>
+              <div class="sq-level-body">
+                <div class="sq-level-top">
+                  <div>
+                    <div class="sq-level-title">Knowledge seeker</div>
+                    <div class="sq-level-desc">A little wiser. A little stronger.</div>
+                  </div>
+                  <div class="sq-level-target" id="dash-next-level">Level 13</div>
+                </div>
+                <div class="sq-xp-meta">
+                  <span id="dash-xp-text">750 / 1,000 XP</span>
+                </div>
+                <div class="sq-xp-track">
+                  <div class="sq-xp-fill" id="dash-xp-bar" style="width: 75%;"></div>
+                </div>
+                <div class="sq-level-footer">
+                  <span id="dash-streak-text">🔥 5-day streak</span>
+                  <span id="dash-xp-remaining">250 XP to your next unlock</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Auto Daily Material Banner -->
+            <div class="sq-auto-banner">
+              <div class="sq-auto-head">
+                <span class="sq-auto-title">Your material. Your next adventure.</span>
+                <span class="sq-auto-tag">AUTO · DAILY</span>
+              </div>
+              <div class="sq-auto-row">
+                <div class="sq-auto-input" id="auto-daily-summary">Dragon battle · 2 sources · Psychology · 25 min</div>
+                <button class="sq-btn-secondary" data-nav="library">Customise quests</button>
+              </div>
+              <p class="sq-auto-footnote">AI XP: difficulty + expected effort + familiarity. Easy material stays low-XP.</p>
+            </div>
+
+            <!-- Today's Quests -->
+            <div class="sq-section-block">
+              <div class="sq-section-head">
+                <h2 class="sq-section-title">Today's quests</h2>
+                <span class="sq-section-count" id="today-quests-count">1 / 3</span>
+              </div>
+
+              <div id="today-quests-list" class="sq-section-block">
+                <!-- Featured Dragon Quest -->
+                <div class="sq-quest-card featured" id="today-card-dragon">
+                  <div class="sq-quest-main">
+                    <div class="sq-quest-icon-box">🐉</div>
+                    <div class="sq-quest-info">
+                      <div class="sq-quest-title-row">
+                        <span class="sq-quest-title" id="today-dragon-title">Recall the forgetting curve</span>
+                        <span class="sq-xp-gain">+60 XP</span>
+                      </div>
+                      <div class="sq-quest-meta">AI daily · 25 min expected · 4 similar quests completed</div>
+                      <div class="sq-quest-source">Memory &amp; learning — Week 4.pdf · pp. 12–14</div>
+                      <div class="sq-quest-tags-row">
+                        <span class="sq-quest-mode" id="today-dragon-progress">DRAGON BATTLE · QUICK RECALL · 5 / 8</span>
+                        <span class="sq-quest-due" id="today-dragon-due">Committed · Today, 18:00</span>
+                      </div>
+                      <div class="sq-quest-action-row">
+                        <button class="sq-btn-primary sq-btn-sm" data-open-quest="dragon" id="btn-today-dragon">Continue battle</button>
+                        <div class="sq-quest-subnotes">
+                          <div id="today-dragon-hp-note">Dragon HP 60 / 100 · Mixed formats · Timed hit / evade</div>
+                          <div class="sq-warn-text">Miss deadline: −20 HP to you; dragon regains up to 20 HP.</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="sq-diff-pill">3/5 · Medium</div>
+                </div>
+
+                <!-- Second Quest -->
+                <div class="sq-quest-card" id="today-card-labyrinth">
+                  <div class="sq-quest-main">
+                    <button class="sq-checkbox" id="chk-q2" data-toggle-done="labyrinth" aria-label="Toggle quest"></button>
+                    <div class="sq-quest-info">
+                      <div class="sq-quest-title-row">
+                        <span class="sq-quest-title" id="today-lab-title">Finish problem set</span>
+                        <span class="sq-xp-gain">+120 XP</span>
+                      </div>
+                      <div class="sq-quest-meta">Labyrinth · Peer difficulty 4/5 · 40 min · Due today, 18:00</div>
+                    </div>
+                  </div>
+                  <button class="sq-link-btn" data-open-quest="labyrinth">Open</button>
+                </div>
+
+                <!-- Completed Quest -->
+                <div class="sq-quest-card completed" id="today-card-balloon">
+                  <div class="sq-quest-main">
+                    <button class="sq-checkbox checked" id="chk-q3" data-toggle-done="balloon" aria-label="Toggle quest">✓</button>
+                    <div class="sq-quest-info">
+                      <div class="sq-quest-title-row">
+                        <span class="sq-quest-title struck" id="today-bal-title">Review flashcards</span>
+                        <span class="sq-xp-muted">+50 XP</span>
+                      </div>
+                      <div class="sq-quest-meta">Balloon barrage · Biology · 15 min · Completed</div>
+                    </div>
+                  </div>
+                  <button class="sq-link-btn" data-open-quest="balloon">Play</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column -->
+          <div class="sq-col-side">
+            <div class="ix" id="today-character"></div>
+
+            <div class="sq-card">
+              <div class="sq-card-head-row">
+                <h2 class="sq-card-title">Your study party</h2>
+                <button class="sq-link-btn" data-nav="party">View all</button>
+              </div>
+              <div class="sq-party-subrow">
+                <span class="sq-party-crew">Campus crew</span>
+                <span class="sq-party-period">THIS WEEK</span>
+              </div>
+
+              <div class="sq-leaderboard">
+                <div class="sq-lb-row">
+                  <span class="sq-lb-rank">01</span>
+                  <span class="sq-lb-name">Mia Chen</span>
+                  <span class="sq-lb-xp">1,820 XP</span>
+                </div>
+                <div class="sq-lb-row">
+                  <span class="sq-lb-rank">02</span>
+                  <span class="sq-lb-name">Noah Williams</span>
+                  <span class="sq-lb-xp">1,600 XP</span>
+                </div>
+                <div class="sq-lb-row highlight">
+                  <span class="sq-lb-rank">03</span>
+                  <span class="sq-lb-name">You</span>
+                  <span class="sq-lb-xp" id="party-you-xp">1,450 XP</span>
+                </div>
+              </div>
+              <p class="sq-lb-note" id="party-rank-note">↗ Just 150 XP from second place. You've got this.</p>
+            </div>
+
+            <div class="sq-hp-card">
+              <div class="sq-hp-top">
+                <strong id="hp-label">80 / 100 HP</strong>
+                <span id="cheat-days-label">2 cheat days banked</span>
+              </div>
+              <div class="sq-hp-bottom">
+                <span id="commitments-label">3 / 5 commitments toward your next day</span>
+                <button class="sq-link-btn" id="btn-use-cheat-today">Use day · Pause 24h</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCREEN 1B: ALL QUESTS HUB -->
+      <section id="view-quests" class="sq-view">
+        <header class="sq-page-header sq-header-row">
+          <div>
+            <h1 class="sq-page-title">Active quests &amp; modes</h1>
+            <p class="sq-page-subtitle">Launch any playable quest mode directly or build a custom quest in the workshop.</p>
+          </div>
+          <div class="sq-header-actions">
+            <button class="sq-btn-secondary" id="btn-reset-demo">Reset demo progress</button>
+            <button class="sq-btn-primary" data-nav="workshop">+ Create quest</button>
+          </div>
+        </header>
+
+        <div class="sq-quest-hub-grid">
+          <div class="sq-card">
+            <div class="sq-card-head-row">
+              <span class="sq-quest-mode">DRAGON BATTLE · +60 XP</span>
+              <span class="sq-diff-pill">3/5 · Medium</span>
+            </div>
+            <h2 class="sq-card-title sq-mt-xs">🐉 Recall the forgetting curve</h2>
+            <p class="sq-muted-sm sq-mt-xs">Timed QTE combat with Choice, Short Answer, Ordering, and Matching phases. Evade fire in time to strike the dragon.</p>
+            <div class="sq-form-actions">
+              <button class="sq-btn-primary sq-btn-sm" data-open-quest="dragon">Launch Dragon battle</button>
+            </div>
+          </div>
+
+          <div class="sq-card">
+            <div class="sq-card-head-row">
+              <span class="sq-quest-mode">BALLOON BARRAGE · +60 XP</span>
+              <span class="sq-diff-pill">2/5 · Easy</span>
+            </div>
+            <h2 class="sq-card-title sq-mt-xs">🎈 Practice biology diagrams</h2>
+            <p class="sq-muted-sm sq-mt-xs">Multi-wave target gallery. Shoot only the balloons matching the biological prompt while avoiding distractors.</p>
+            <div class="sq-form-actions">
+              <button class="sq-btn-primary sq-btn-sm" data-open-quest="balloon">Launch Balloon barrage</button>
+            </div>
+          </div>
+
+          <div class="sq-card">
+            <div class="sq-card-head-row">
+              <span class="sq-quest-mode">RECALL LABYRINTH · +120 XP</span>
+              <span class="sq-diff-pill">4/5 · Hard</span>
+            </div>
+            <h2 class="sq-card-title sq-mt-xs">🧭 Finish problem set</h2>
+            <p class="sq-muted-sm sq-mt-xs">Navigate blind forks by solving equations. Correct answers advance through gates; wrong turns add +00:30 penalty.</p>
+            <div class="sq-form-actions">
+              <button class="sq-btn-primary sq-btn-sm" data-open-quest="labyrinth">Launch Recall labyrinth</button>
+            </div>
+          </div>
+
+          <div class="sq-card">
+            <div class="sq-card-head-row">
+              <span class="sq-quest-mode">TALK WITH SOCRATES · +90 XP</span>
+              <span class="sq-diff-pill">4/5 · Hard</span>
+            </div>
+            <h2 class="sq-card-title sq-mt-xs">🏛️ Explain spaced repetition</h2>
+            <p class="sq-muted-sm sq-mt-xs">Socratic dialogue requiring mechanism, causal reasoning, counterexample, and empirical comparison to reach 4/4 accuracy.</p>
+            <div class="sq-form-actions">
+              <button class="sq-btn-primary sq-btn-sm" data-open-quest="socrates">Launch Talk with Socrates</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCREEN 2: CAMPUS CREW / PARTY QUEST BOARD -->
+      <section id="view-party" class="sq-view">
+        <header class="sq-page-header sq-header-row">
+          <div>
+            <h1 class="sq-page-title">Campus crew</h1>
+            <p class="sq-page-subtitle">Team XP is peer-rated. Duels: win XP, lose HP on defeat—no healing.</p>
+          </div>
+          <div class="sq-header-actions">
+            <button class="sq-btn-secondary" data-nav="duels">Challenge to duel</button>
+            <button class="sq-btn-primary" data-nav="workshop">Create a quest</button>
+          </div>
+        </header>
+
+        <div class="sq-party-layout">
+          <div class="sq-col-main" id="party-quests-container">
+            <div class="sq-kpi-row">
+              <div class="sq-kpi-card">
+                <div class="sq-kpi-num" id="party-shared-count">3</div>
+                <div class="sq-kpi-label">Shared quests</div>
+              </div>
+              <div class="sq-kpi-card">
+                <div class="sq-kpi-num" id="party-needs-rating-count">1</div>
+                <div class="sq-kpi-label">Needs your rating</div>
+              </div>
+            </div>
+
+            <div class="sq-filter-pills" id="party-filters">
+              <button class="sq-pill-btn active" data-filter="all">All quests (3)</button>
+              <button class="sq-pill-btn" data-filter="rating">Needs rating (1)</button>
+              <button class="sq-pill-btn" data-filter="mine">Created by me (1)</button>
+            </div>
+
+            <!-- Quest 1 -->
+            <div class="sq-card sq-crew-quest" id="crew-quest-socrates" data-category="rating">
+              <div class="sq-crew-top-tag" id="crew-socrates-status">Needs your rating <span class="sq-pending-right">XP pending</span></div>
+              <div class="sq-crew-body">
+                <div class="sq-crew-icon">🏛️</div>
+                <div class="sq-crew-content">
+                  <div class="sq-crew-title-line">
+                    <h3>Explain spaced repetition</h3>
+                    <span class="sq-badge-gray" id="crew-socrates-badge">Score pending</span>
+                  </div>
+                  <div class="sq-quest-meta">Socrates · Hard 4/5 demand · 35 min · Mia Chen</div>
+                  <p class="sq-crew-desc">Socrates only asks questions and continues until the reasoning is accurate enough. Harder demands require more time; the source stays private.</p>
+                  <div class="sq-crew-foot">
+                    <span class="sq-muted-sm" id="crew-socrates-ratings">1 of 2 peer ratings received</span>
+                    <button class="sq-btn-primary sq-btn-sm" data-open-quest="socrates">Open quest</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quest 2 -->
+            <div class="sq-card sq-crew-quest" id="crew-quest-labyrinth" data-category="mine">
+              <div class="sq-crew-top-tag green">Peer reviewed <span class="sq-xp-gain">+120 XP</span></div>
+              <div class="sq-crew-body">
+                <div class="sq-crew-icon">🗺️</div>
+                <div class="sq-crew-content">
+                  <div class="sq-crew-title-line">
+                    <h3>Finish problem set</h3>
+                    <span class="sq-badge-purple">Peer 4/5</span>
+                  </div>
+                  <div class="sq-quest-meta">Recall labyrinth · Mathematics · 40 min · Created by You</div>
+                  <p class="sq-crew-desc">Explore only the path ahead; answer questions 1–8 to choose directions, then share your working.</p>
+                  <div class="sq-crew-foot">
+                    <span class="sq-muted-sm">Usefulness 5.0 / 5 · 2 / 2 peer ratings</span>
+                    <button class="sq-btn-secondary sq-btn-sm" data-open-quest="labyrinth">Play labyrinth</button>
+                  </div>
+                  <div class="sq-warn-text sq-mt-xs">Wrong turn: +00:30 elapsed. Missed signed-up deadline: −20 HP.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quest 3 -->
+            <div class="sq-card sq-crew-quest" id="crew-quest-balloon" data-category="all">
+              <div class="sq-crew-top-tag green">Peer reviewed <span class="sq-xp-gain">+60 XP</span></div>
+              <div class="sq-crew-body">
+                <div class="sq-crew-icon">🎈</div>
+                <div class="sq-crew-content">
+                  <div class="sq-crew-title-line">
+                    <h3>Practice biology diagrams</h3>
+                    <span class="sq-badge-gray">Peer 2/5</span>
+                  </div>
+                  <div class="sq-quest-meta">Balloon barrage · Biology · 25 min · Noah Williams</div>
+                  <p class="sq-crew-desc">Shoot balloons with correct biology answers, then draw a cell from memory and check your work.</p>
+                  <div class="sq-crew-foot">
+                    <span class="sq-muted-sm">Usefulness 4.0 / 5 · 2 / 2 peer ratings</span>
+                    <button class="sq-btn-secondary sq-btn-sm" data-open-quest="balloon">Join quest</button>
+                  </div>
+                  <div class="sq-warn-text sq-mt-xs">If you join: missing the deadline costs 20 HP and restarts the current balloon wave.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Rating & Coins Panel -->
+          <div class="sq-col-side">
+            <div class="sq-card">
+              <div class="sq-card-head-row">
+                <h2 class="sq-card-title">Rate a quest</h2>
+                <span class="sq-link-sm" id="rating-turn-label">Your turn</span>
+              </div>
+              <div class="sq-rate-picker" id="rate-picker"></div>
+              <div class="sq-rate-target" id="rate-target"></div>
+              <p class="sq-muted-sm">Rate reasoning depth, accuracy and expected effort. Socratic tasks are inherently harder, not merely a different skin.</p>
+
+              <div class="sq-rating-block">
+                <div class="sq-rating-label-row">
+                  <span>Difficulty</span>
+                  <strong id="diff-val">4 / 5</strong>
+                </div>
+                <div class="sq-muted-xs">How much effort will this take?</div>
+                <div class="sq-scale-row" id="diff-scale">
+                  <button class="sq-scale-btn" data-val="1">1</button>
+                  <button class="sq-scale-btn" data-val="2">2</button>
+                  <button class="sq-scale-btn" data-val="3">3</button>
+                  <button class="sq-scale-btn active" data-val="4">4</button>
+                  <button class="sq-scale-btn" data-val="5">5</button>
+                </div>
+                <div class="sq-scale-ends"><span>Very easy</span><span>Very hard</span></div>
+              </div>
+
+              <div class="sq-rating-block">
+                <div class="sq-rating-label-row">
+                  <span>Usefulness</span>
+                  <strong id="use-val">5 / 5</strong>
+                </div>
+                <div class="sq-muted-xs">How valuable is this for your group?</div>
+                <div class="sq-scale-row" id="use-scale">
+                  <button class="sq-scale-btn" data-val="1">1</button>
+                  <button class="sq-scale-btn" data-val="2">2</button>
+                  <button class="sq-scale-btn" data-val="3">3</button>
+                  <button class="sq-scale-btn" data-val="4">4</button>
+                  <button class="sq-scale-btn active" data-val="5">5</button>
+                </div>
+                <div class="sq-scale-ends"><span>Not useful</span><span>Very useful</span></div>
+              </div>
+
+              <div class="sq-rating-block">
+                <label class="sq-field-label" for="rating-feedback">Feedback (optional)</label>
+                <textarea id="rating-feedback" class="sq-textarea" rows="3" placeholder="What would make this quest better?"></textarea>
+              </div>
+
+              <button class="sq-btn-primary sq-btn-block" id="btn-submit-rating">Submit rating</button>
+              <p class="sq-muted-xs sq-mt-xs" id="rating-note">Team XP finalises after both peers rate it. Creator coins are separate from completion XP.</p>
+            </div>
+
+            <div class="sq-dark-card">
+              <div class="sq-dark-card-title" id="party-coins-title">30 creator coins · 2 cheat days</div>
+              <p class="sq-dark-muted">+30 coins from “Finish problem set” · approved by 2 / 2 peers.</p>
+              <div class="sq-dark-highlight" id="party-cheat-progress">Next cheat day: 3 / 5 committed quests completed.</div>
+              <p class="sq-dark-muted">Complete 5 commitments to earn 1 day. Redeem before a deadline to pause deadlines and missed-task damage.</p>
+              <button class="sq-btn-light sq-btn-block sq-mt-sm" id="btn-use-cheat-party">Use cheat day · Pause 24h</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCREEN 3: QUEST WORKSHOP -->
+      <section id="view-workshop" class="sq-view">
+        <header class="sq-page-header sq-header-row">
+          <div>
+            <h1 class="sq-page-title">Build your next adventure</h1>
+            <p class="sq-page-subtitle">Choose how you play. Keep the learning, make the journey yours.</p>
+          </div>
+          <button class="sq-btn-secondary" data-nav="party">Back to quest board</button>
+        </header>
+
+        <div class="sq-section-head">
+          <span class="sq-step-label"><strong>01</strong> Choose your level</span>
+          <span class="sq-muted-xs">Actual reasoning demands shape difficulty, time and XP</span>
+        </div>
+
+        <div class="sq-level-picker" id="workshop-levels">
+          <button class="sq-level-option" data-level="Dragon battle" data-quest-type="dragon">
+            <div class="sq-opt-icon">🐉</div>
+            <div class="sq-opt-title">Dragon battle</div>
+            <div class="sq-opt-desc">Mixed question formats. Timed hits and evasions.</div>
+            <div class="sq-opt-foot">Missed: enemy regenerates.</div>
+          </button>
+          <button class="sq-level-option" data-level="Balloon barrage" data-quest-type="balloon">
+            <div class="sq-opt-icon">🎈</div>
+            <div class="sq-opt-title">Balloon barrage</div>
+            <div class="sq-opt-desc">Shoot moving balloons with correct answers.</div>
+            <div class="sq-opt-foot">Missed: current wave restarts.</div>
+          </button>
+          <button class="sq-level-option active" data-level="Recall labyrinth" data-quest-type="labyrinth">
+            <div class="sq-opt-icon">🧭</div>
+            <div class="sq-opt-title">Recall labyrinth</div>
+            <div class="sq-opt-desc">Only the path ahead. Wrong turns add time.</div>
+            <div class="sq-opt-foot selected-foot">SELECTED · Wrong turn: +00:30</div>
+          </button>
+          <button class="sq-level-option" data-level="Talk with Socrates" data-quest-type="socrates">
+            <div class="sq-opt-icon">🏛️</div>
+            <div class="sq-opt-title">Talk with Socrates</div>
+            <div class="sq-opt-desc">Questions only. Harder questions, more time.</div>
+            <div class="sq-opt-foot">3/5+ demand · 25–50 min</div>
+          </button>
+        </div>
+
+        <div class="sq-workshop-grid">
+          <div class="sq-col-main">
+            <div class="sq-card">
+              <div class="sq-card-head-row">
+                <span class="sq-step-label"><strong>02</strong> Shape your quest</span>
+                <span class="sq-draft-tag">DRAFT · TEAM QUEST</span>
+              </div>
+
+              <div class="sq-form-row-2">
+                <div class="sq-field">
+                  <label class="sq-field-label" for="ws-title">Quest title</label>
+                  <input id="ws-title" class="sq-input" type="text" value="Build a memory palace" />
+                </div>
+                <div class="sq-field">
+                  <label class="sq-field-label" for="ws-time">Expected time</label>
+                  <input id="ws-time" class="sq-input" type="text" value="25 minutes" />
+                </div>
+              </div>
+
+              <div class="sq-form-row-3">
+                <div class="sq-field">
+                  <label class="sq-field-label" for="ws-subject">Subject</label>
+                  <input id="ws-subject" class="sq-input" type="text" value="Psychology" />
+                </div>
+                <div class="sq-field">
+                  <label class="sq-field-label" for="ws-questions">Questions</label>
+                  <input id="ws-questions" class="sq-input" type="text" value="10 questions" />
+                </div>
+                <div class="sq-field">
+                  <label class="sq-field-label" for="ws-hints">Hints</label>
+                  <input id="ws-hints" class="sq-input" type="text" value="On · one per room" />
+                </div>
+              </div>
+
+              <div class="sq-field">
+                <label class="sq-field-label" for="ws-prompt">What should your crew do?</label>
+                <textarea id="ws-prompt" class="sq-textarea" rows="3">Choose 10 key terms from this week's lecture. Build a memory palace, then share your route and explain how each location helps you recall a term.</textarea>
+              </div>
+
+              <div class="sq-source-bar">
+                <div>
+                  <div class="sq-source-link" id="ws-source-name">Memory &amp; learning — Week 4.pdf</div>
+                  <div class="sq-muted-xs">AI ready · Intermediate material · Private. Only the quest is shared.</div>
+                </div>
+                <button class="sq-link-btn" data-nav="library">Change source</button>
+              </div>
+
+              <div class="sq-criteria-block">
+                <div class="sq-field-label">Completion criteria</div>
+                <div class="sq-criteria-list">
+                  <span>✓ Map 10 terms to locations</span>
+                  <span>✓ Share a one-page guide with Campus crew</span>
+                </div>
+              </div>
+
+              <div class="sq-crew-banner">
+                <strong>Campus crew · 3 members · Private group</strong>
+                <div class="sq-muted-xs">Peer difficulty and XP pending. Other members rate; creators don't rate their own quests.</div>
+              </div>
+
+              <div class="sq-form-actions">
+                <button class="sq-btn-primary" id="btn-send-peer">Send for peer rating</button>
+                <button class="sq-btn-secondary" id="btn-save-draft">Save draft</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="sq-col-side">
+            <div class="sq-card">
+              <div class="sq-step-label"><strong>03</strong> Make the commitment clear</div>
+              <p class="sq-muted-xs">Stakes start only when a player signs up—not when a quest is suggested.</p>
+
+              <div class="sq-form-row-2 sq-mt-sm">
+                <div class="sq-field">
+                  <label class="sq-field-label">Complete within</label>
+                  <div class="sq-static-box">24h of joining</div>
+                </div>
+                <div class="sq-field">
+                  <label class="sq-field-label">Missed task damage</label>
+                  <div class="sq-static-box">20 HP</div>
+                </div>
+              </div>
+
+              <div class="sq-setback-box" id="ws-setback-preview">
+                <strong>Recall labyrinth setback</strong>
+                <p>Only the immediate path is visible. Wrong answer: wrong turn and +00:30 elapsed. Missed commitment: −20 HP.</p>
+              </div>
+              <p class="sq-muted-xs sq-mt-xs">Players see the deadline and setback before they commit.</p>
+            </div>
+
+            <div class="sq-hp-card">
+              <div class="sq-hp-top">
+                <strong>Earn your breathing room</strong>
+                <span id="ws-banked-badge">2 banked</span>
+              </div>
+              <p class="sq-muted-xs sq-mt-xs">Complete 5 committed quests → earn 1 cheat day. Your progress: 3 / 5.</p>
+              <p class="sq-muted-xs sq-mt-xs">Redeem before a deadline to pause commitments and damage for 24h. A break does not count as completion.</p>
+            </div>
+
+            <div class="sq-dark-card">
+              <div class="sq-dark-card-title" id="ws-coins-banner">30 creator coins available</div>
+              <p class="sq-dark-muted">+30 earned from “Finish problem set”. Moonlight cape (Level <span id="ws-cape-level">1</span>): <span id="ws-cape-progress">30 / 60</span> coins.</p>
+              <p class="sq-dark-muted">AI XP follows actual reasoning difficulty, expected focus and familiarity. Easy material still stays low-XP.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCREEN 4: STUDY LIBRARY & AI GENERATION -->
+      <section id="view-library" class="sq-view">
+        <header class="sq-page-header sq-header-row">
+          <div>
+            <h1 class="sq-page-title">Your study library</h1>
+            <p class="sq-page-subtitle">Turn your own material into your next sidequest.</p>
+          </div>
+          <button class="sq-btn-primary" id="btn-upload-top">Upload material</button>
+        </header>
+
+        <div class="sq-library-layout">
+          <div class="sq-col-main">
+            <div class="sq-dropzone">
+              <div class="sq-dropzone-head">
+                <strong>Drop your study material here</strong>
+                <span class="sq-muted-xs">PDF · DOCX · PPTX</span>
+              </div>
+              <p class="sq-muted-sm">Save lecture notes, slides and readings in sidequest for the AI to use.</p>
+              <div class="sq-dropzone-actions">
+                <button class="sq-btn-primary sq-btn-sm" id="btn-browse-device">Browse device</button>
+                <span class="sq-muted-xs">Up to 25 MB per document</span>
+              </div>
+            </div>
+
+            <div class="sq-card">
+              <div class="sq-section-head">
+                <h2 class="sq-section-title">Saved material</h2>
+                <span class="sq-muted-xs" id="doc-total-count">4 documents</span>
+              </div>
+
+              <div class="sq-search-row">
+                <input type="text" id="library-search" class="sq-input" placeholder="Search your material" />
+                <span class="sq-accent-sm" id="selected-docs-count">2 selected</span>
+              </div>
+
+              <div class="sq-doc-list" id="doc-list">
+                <label class="sq-doc-item selected">
+                  <input type="checkbox" class="doc-check" checked />
+                  <span class="sq-doc-badge pdf">PDF</span>
+                  <div class="sq-doc-info">
+                    <div class="sq-doc-title">Memory &amp; learning — Week 4.pdf</div>
+                    <div class="sq-muted-xs">Psychology · 24 pages · 2.4 MB</div>
+                  </div>
+                  <span class="sq-status-ready">AI ready</span>
+                </label>
+
+                <label class="sq-doc-item selected">
+                  <input type="checkbox" class="doc-check" checked />
+                  <span class="sq-doc-badge pptx">PPTX</span>
+                  <div class="sq-doc-info">
+                    <div class="sq-doc-title">Lecture 4 — Memory.pptx</div>
+                    <div class="sq-muted-xs">Psychology · 38 slides · 5.1 MB</div>
+                  </div>
+                  <span class="sq-status-ready">AI ready</span>
+                </label>
+
+                <label class="sq-doc-item">
+                  <input type="checkbox" class="doc-check" />
+                  <span class="sq-doc-badge docx">DOCX</span>
+                  <div class="sq-doc-info">
+                    <div class="sq-doc-title">Research methods notes.docx</div>
+                    <div class="sq-muted-xs">Psychology · 18 pages · 640 KB</div>
+                    <div class="sq-muted-xs">Reading your document. It will be selectable when ready.</div>
+                  </div>
+                  <span class="sq-status-proc">Processing</span>
+                </label>
+
+                <label class="sq-doc-item">
+                  <input type="checkbox" class="doc-check" />
+                  <span class="sq-doc-badge pdf">PDF</span>
+                  <div class="sq-doc-info">
+                    <div class="sq-doc-title">Handwritten revision.pdf</div>
+                    <div class="sq-muted-xs">Scanned notes · 3.2 MB</div>
+                    <div class="sq-warn-text">No readable text found. Try a clearer or text-based copy. <span class="sq-link-inline">Replace</span></div>
+                  </div>
+                  <span class="sq-status-warn">Needs attention</span>
+                </label>
+              </div>
+
+              <div class="sq-doc-footer">
+                <span class="sq-muted-xs">Private · Accessible to you and sidequest AI</span>
+                <button class="sq-link-btn" id="btn-manage-mat">Add sample note</button>
+              </div>
+            </div>
+
+            <div class="sq-xp-explain-card">
+              <div class="sq-card-head-row">
+                <strong>AI XP: difficulty, time and familiarity</strong>
+                <span class="sq-pill-soft">Easy material = low XP</span>
+              </div>
+              <div class="sq-xp-cols">
+                <div>
+                  <div class="sq-xp-col-title">Difficulty</div>
+                  <p class="sq-muted-xs">Actual reasoning demands set the challenge.</p>
+                </div>
+                <div>
+                  <div class="sq-xp-col-title">Familiarity</div>
+                  <p class="sq-muted-xs">More similar quests completed means less XP.</p>
+                </div>
+                <div>
+                  <div class="sq-xp-col-title">Expected time</div>
+                  <p class="sq-muted-xs">Required focus scales with difficulty and question format.</p>
+                </div>
+              </div>
+              <div class="sq-accent-xs sq-mt-xs">Easy-material example: difficulty 1/5 · 5 min · 8 similar completed → 5 XP</div>
+            </div>
+          </div>
+
+          <div class="sq-col-side">
+            <div class="sq-card">
+              <h2 class="sq-card-title">Create my daily adventures</h2>
+              <div class="sq-green-xs" id="lib-sources-status">Exam prep · 2 AI-ready sources · Private</div>
+
+              <div class="sq-seg-tabs sq-mt-sm" id="gen-mode-tabs">
+                <button class="sq-seg-btn active" data-mode="Quests">Quests</button>
+                <button class="sq-seg-btn" data-mode="Flashcards">Flashcards</button>
+                <button class="sq-seg-btn" data-mode="Quiz">Quiz</button>
+              </div>
+
+              <div class="sq-form-row-2 sq-mt-sm">
+                <div class="sq-field">
+                  <label class="sq-field-label">Adventure style</label>
+                  <select id="lib-style-select" class="sq-input">
+                    <option value="Dragon battle">Dragon battle</option>
+                    <option value="Balloon barrage">Balloon barrage</option>
+                    <option value="Recall labyrinth">Recall labyrinth</option>
+                    <option value="Talk with Socrates">Talk with Socrates</option>
+                  </select>
+                </div>
+                <div class="sq-field">
+                  <label class="sq-field-label">Target challenge</label>
+                  <div class="sq-static-box">Match my level</div>
+                </div>
+              </div>
+
+              <div class="sq-form-row-2">
+                <div class="sq-field">
+                  <label class="sq-field-label">Expected time</label>
+                  <div class="sq-static-box">25 minutes</div>
+                </div>
+                <div class="sq-field">
+                  <label class="sq-field-label">Questions</label>
+                  <div class="sq-static-box">8 · Mixed · Hints on</div>
+                </div>
+              </div>
+
+              <div class="sq-toggle-row">
+                <span>Refresh automatically each day</span>
+                <button class="sq-switch on" id="btn-auto-refresh" aria-pressed="true">ON</button>
+              </div>
+
+              <button class="sq-btn-primary sq-btn-block sq-mt-sm" id="btn-generate-3">Generate 3 adventures</button>
+              <p class="sq-muted-xs sq-mt-xs">Generated quests are suggestions. Damage and setbacks start only after you commit.</p>
+            </div>
+
+            <div class="sq-dark-card">
+              <div class="sq-dark-top-line">
+                <span>DRAGON · SHORT-ANSWER QTE</span>
+                <span class="sq-dark-xp">+60 XP</span>
+              </div>
+              <div class="sq-preview-header">
+                <span class="sq-preview-dragon">🐉</span>
+                <div>
+                  <div class="sq-dark-card-title">Recall the forgetting curve</div>
+                  <div class="sq-dark-muted">3/5 · Medium · 25 min · 4 similar completed</div>
+                  <div class="sq-dark-muted">Choice · Type · Order · Match</div>
+                </div>
+              </div>
+              <div class="sq-qte-box">
+                <div class="sq-qte-timer">EVADE · 00:08.0 · Recall before impact</div>
+                <div class="sq-qte-prompt">Retrieval practice means ____ without cues.</div>
+                <div class="sq-qte-answer">recalling</div>
+              </div>
+              <button class="sq-btn-light sq-btn-block sq-mt-sm" data-open-quest="dragon">Choose deadline &amp; commit</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCREEN 5: DRAGON BATTLE QUEST -->
+      <section id="view-quest-dragon" class="sq-view">
+        <header class="sq-page-header sq-header-row">
+          <div>
+            <h1 class="sq-page-title">Recall the forgetting curve</h1>
+            <p class="sq-page-subtitle">Dragon battle · Psychology · AI daily quest</p>
+          </div>
+          <div class="sq-header-actions">
+            <button class="sq-btn-secondary" id="btn-dragon-reset">Restart battle</button>
+            <button class="sq-btn-secondary" data-nav="today">Back to quests</button>
+          </div>
+        </header>
+
+        <div class="sq-quest-detail-grid">
+          <div class="sq-col-main">
+            <div class="sq-battle-arena">
+              <div class="sq-battle-meta">
+                <span id="dragon-round-label">DRAGON BATTLE · QUESTION 1 / 4</span>
+                <span>Committed · Today, 18:00</span>
+              </div>
+
+              <div class="sq-hp-bars">
+                <div class="sq-hp-side">
+                  <div class="sq-hp-names">
+                    <strong>Alex · You</strong>
+                    <span id="dragon-player-hp-text">80 / 100</span>
+                  </div>
+                  <div class="sq-bar-track"><div class="sq-bar-green" id="dragon-player-hp-bar" style="width:80%;"></div></div>
+                </div>
+                <div class="sq-hp-side">
+                  <div class="sq-hp-names">
+                    <strong>Recall dragon</strong>
+                    <span id="dragon-boss-hp-text">60 / 100</span>
+                  </div>
+                  <div class="sq-bar-track"><div class="sq-bar-purple" id="dragon-boss-hp-bar" style="width:60%;"></div></div>
+                </div>
+              </div>
+
+              <div class="sq-arena-stage">
+                <div class="sq-fighter">🧑‍🎓</div>
+                <div class="sq-strike-box">
+                  <div class="sq-strike-label" id="dragon-strike-label">RECALL STRIKE</div>
+                  <div class="sq-strike-val" id="dragon-strike-val">−20</div>
+                  <div class="sq-strike-line">───●───▶</div>
+                  <div class="sq-strike-sub" id="dragon-strike-sub">Last correct answer</div>
+                </div>
+                <div class="sq-fighter">🐉</div>
+              </div>
+
+              <div class="sq-battle-foot">Mixed question types · Answer before the countdown expires to evade &amp; deal 20 damage!</div>
+            </div>
+
+            <div class="sq-card sq-mt-md">
+              <div class="sq-format-tabs" id="dragon-formats">
+                <button type="button" class="sq-fmt-btn" data-fmt="choice">Choice</button>
+                <button type="button" class="sq-fmt-btn active" data-fmt="short">Short answer</button>
+                <button type="button" class="sq-fmt-btn" data-fmt="order">Order</button>
+                <button type="button" class="sq-fmt-btn" data-fmt="match">Match</button>
+              </div>
+
+              <div class="sq-evade-banner">
+                <div class="sq-evade-top">
+                  <strong>EVADE FIRE · ANSWER BEFORE IMPACT</strong>
+                  <strong class="sq-timer-num" id="dragon-timer">00:08.0</strong>
+                </div>
+                <div class="sq-evade-bar"><div class="sq-evade-fill" id="dragon-evade-bar" style="width:100%;"></div></div>
+                <div class="sq-muted-xs">Live QTE countdown · Answering accurately before 00:00.0 hits the dragon for 20 HP.</div>
+              </div>
+
+              <div id="dragon-question-body"></div>
+
+              <div class="sq-form-actions sq-mt-sm">
+                <button type="button" class="sq-btn-primary" id="btn-answer-evade">Answer &amp; evade</button>
+                <button type="button" class="sq-btn-secondary" id="btn-dragon-next-q">Skip / Next question</button>
+              </div>
+
+              <div id="dragon-game-end-banner" class="sq-game-over-banner" style="display:none;"></div>
+            </div>
+          </div>
+
+          <div class="sq-col-side">
+            <div class="sq-card">
+              <div class="sq-card-head-row">
+                <h2 class="sq-card-title">Your learning quest</h2>
+                <span class="sq-xp-gain">+60 XP</span>
+              </div>
+              <div class="sq-accent-sm sq-mt-xs">3/5 · Medium</div>
+              <div class="sq-kv-list">
+                <div><span>Expected time</span><strong>25 minutes</strong></div>
+                <div><span>Similar quests completed</span><strong>4</strong></div>
+                <div><span>Material level</span><strong>Intermediate</strong></div>
+              </div>
+              <p class="sq-muted-xs sq-mt-sm">Defeat the dragon (0 HP) to claim the +60 XP quest completion reward.</p>
+            </div>
+
+            <div class="sq-info-purple">
+              <div class="sq-kicker-xs">GROUNDED IN YOUR MATERIAL</div>
+              <strong>Memory &amp; learning — Week 4.pdf</strong>
+              <div class="sq-link-sm sq-mt-xs">Pages 12–14 · Source verified</div>
+              <p class="sq-warn-text sq-mt-xs">Correct in time: evade &amp; −20 Dragon HP. Wrong or timeout: dragon hits for −10 Player HP.</p>
+            </div>
+
+            <div class="sq-hp-card">
+              <div class="sq-hp-top">
+                <strong id="dragon-cheat-badge">2 cheat days banked</strong>
+              </div>
+              <p class="sq-muted-xs sq-mt-xs">3 / 5 commitments toward your next day. Complete 5 to earn 1.</p>
+              <button type="button" class="sq-btn-secondary sq-btn-sm sq-mt-xs" id="btn-cheat-dragon">Use day · Pause 24h</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCREEN 6: BALLOON BARRAGE QUEST -->
+      <section id="view-quest-balloon" class="sq-view">
+        <header class="sq-page-header sq-header-row">
+          <div>
+            <h1 class="sq-page-title">Practice biology diagrams</h1>
+            <p class="sq-page-subtitle">Balloon barrage · Biology · Campus crew quest</p>
+          </div>
+          <div class="sq-header-actions">
+            <button class="sq-btn-secondary" id="btn-balloon-reset">Restart wave</button>
+            <button class="sq-btn-secondary" data-nav="party">Back to quests</button>
+          </div>
+        </header>
+
+        <div class="sq-quest-detail-grid">
+          <div class="sq-col-main">
+            <div class="sq-balloon-stage">
+              <div class="sq-balloon-top">
+                <span id="balloon-wave-title">BALLOON BARRAGE · WAVE 1 / 3</span>
+                <span class="sq-accent-sm" id="balloon-score-label">0 / 2 correct balloons hit</span>
+              </div>
+              <h2 class="sq-question-title" id="balloon-prompt-title">Shoot the main sites of protein synthesis and folding.</h2>
+              <p class="sq-muted-xs">Click moving balloons with correct answers. Leave distractors intact.</p>
+
+              <div class="sq-balloon-arena" id="balloon-arena"></div>
+
+              <div class="sq-balloon-foot">
+                <span id="balloon-footer-status">Wave 1 / 3 · Player HP 80 / 100</span>
+                <button class="sq-btn-primary sq-btn-sm" id="btn-balloon-next-wave" style="display:none;">Next wave →</button>
+              </div>
+            </div>
+
+            <div class="sq-feedback-card sq-mt-md" id="balloon-feedback">
+              <div class="sq-feedback-title">Aim at the correct organelles!</div>
+              <p class="sq-muted-sm">Pop all 2 correct balloons to unlock the next wave.</p>
+            </div>
+          </div>
+
+          <div class="sq-col-side">
+            <div class="sq-card">
+              <div class="sq-card-head-row">
+                <h2 class="sq-card-title">Practice biology diagrams</h2>
+                <span class="sq-xp-gain">+60 XP</span>
+              </div>
+              <div class="sq-accent-sm sq-mt-xs">Peer difficulty 2/5</div>
+              <div class="sq-kv-list">
+                <div><span>Expected time</span><strong>25 minutes</strong></div>
+                <div><span>Created by</span><strong>Noah Williams</strong></div>
+                <div><span>Peer reviews</span><strong>2 / 2 complete</strong></div>
+                <div><span>Hint setting</span><strong>On</strong></div>
+              </div>
+            </div>
+
+            <div class="sq-info-purple">
+              <strong>Aim at moving answers</strong>
+              <p class="sq-muted-xs sq-mt-xs">Clear all 3 waves to earn +60 XP! Hitting a distractor deals −5 HP.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCREEN 7: RECALL LABYRINTH QUEST -->
+      <section id="view-quest-labyrinth" class="sq-view">
+        <header class="sq-page-header sq-header-row">
+          <div>
+            <h1 class="sq-page-title">Finish problem set</h1>
+            <p class="sq-page-subtitle">Recall labyrinth · Mathematics · Campus crew quest</p>
+          </div>
+          <div class="sq-header-actions">
+            <button class="sq-btn-secondary" id="btn-lab-reset">Restart maze</button>
+            <button class="sq-btn-secondary" data-nav="party">Back to quests</button>
+          </div>
+        </header>
+
+        <div class="sq-quest-detail-grid">
+          <div class="sq-col-main">
+            <div class="sq-maze-card">
+              <div class="sq-maze-top">
+                <span id="maze-fork-label">RECALL LABYRINTH · FORK 1 / 4</span>
+                <strong id="maze-elapsed-label">Elapsed 08:45</strong>
+              </div>
+              <p class="sq-maze-sub">Only the path ahead is visible. Solve each equation to choose the open corridor.</p>
+
+              <div class="sq-maze-viewport">
+                <div class="sq-maze-corridor-h"></div>
+                <div class="sq-maze-corridor-v"></div>
+                <div class="sq-maze-marker-x">✕</div>
+                <div class="sq-maze-player">▲</div>
+              </div>
+
+              <div class="sq-maze-foot">
+                <span id="maze-gates-label">Ahead-only view · 0 / 4 gates · HP 80 / 100</span>
+                <span class="sq-maze-warn">Wrong turn +00:30</span>
+              </div>
+            </div>
+
+            <div class="sq-card sq-mt-md">
+              <div class="sq-card-head-row">
+                <span class="sq-kicker-xs" id="maze-kicker">FORK 1 · YOUR ANSWER CHOOSES THE PATH</span>
+                <button class="sq-link-btn" id="btn-use-hint">Use hint</button>
+              </div>
+              <h2 class="sq-question-title" id="maze-question-text">Solve 2x + 5 = 17. Which way will you go?</h2>
+
+              <div class="sq-choices-3" id="labyrinth-choices"></div>
+
+              <div class="sq-alert-amber" id="labyrinth-alert">
+                Choose the correct value of x to advance to the next gate.
+              </div>
+
+              <button class="sq-btn-primary sq-mt-sm" id="btn-choose-passage">Choose passage</button>
+            </div>
+          </div>
+
+          <div class="sq-col-side">
+            <div class="sq-card">
+              <div class="sq-card-head-row">
+                <h2 class="sq-card-title">Finish problem set</h2>
+                <span class="sq-xp-gain">+120 XP</span>
+              </div>
+              <div class="sq-accent-sm sq-mt-xs">Peer difficulty 4/5</div>
+              <div class="sq-kv-list">
+                <div><span>Expected time</span><strong>40 minutes</strong></div>
+                <div><span>Quest owner</span><strong>You · Alex Morgan</strong></div>
+                <div><span>Peer reviews</span><strong>2 / 2 complete</strong></div>
+              </div>
+            </div>
+
+            <div class="sq-hp-card">
+              <strong>Learn your way out</strong>
+              <p class="sq-muted-xs sq-mt-xs">Reach Gate 4 / 4 to exit the labyrinth and collect +120 XP!</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCREEN 8: TALK WITH SOCRATES QUEST -->
+      <section id="view-quest-socrates" class="sq-view">
+        <header class="sq-page-header sq-header-row">
+          <div>
+            <h1 class="sq-page-title">Explain spaced repetition</h1>
+            <p class="sq-page-subtitle">Talk with Socrates · Psychology · Reasoning challenge</p>
+          </div>
+          <div class="sq-header-actions">
+            <button class="sq-btn-secondary" id="btn-socrates-reset">Reset dialogue</button>
+            <button class="sq-btn-secondary" data-nav="party">Back to quests</button>
+          </div>
+        </header>
+
+        <div class="sq-quest-detail-grid">
+          <div class="sq-col-main">
+            <div class="sq-socrates-panel">
+              <div class="sq-socrates-top">
+                <div class="sq-socrates-head">
+                  <span class="sq-socrates-avatar">🏛️</span>
+                  <div>
+                    <h2 class="sq-card-title">Talk with Socrates</h2>
+                    <div class="sq-muted-xs">Questions only · Reach 4 / 4 accuracy criteria to complete</div>
+                  </div>
+                </div>
+                <span class="sq-amber-bold" id="socrates-score-badge">2 / 4 accurate</span>
+              </div>
+
+              <div class="sq-dialogue-list" id="socrates-dialogue"></div>
+            </div>
+
+            <div class="sq-card sq-mt-md">
+              <div class="sq-card-head-row">
+                <label class="sq-field-label" for="socrates-input">Your argument</label>
+                <button class="sq-link-btn" id="btn-ask-another">Prompt hint</button>
+              </div>
+              <textarea id="socrates-input" class="sq-textarea sq-mt-xs" rows="3">I would compare spaced retrieval with an equal-time rereading group, then test both after a week as a counterexample to fluency-only study.</textarea>
+              <div class="sq-reply-row">
+                <button class="sq-btn-primary sq-btn-sm" id="btn-socrates-reply">Reply to Socrates</button>
+                <span class="sq-muted-xs">Include evidence, a counterexample, or a controlled comparison to satisfy the remaining criteria.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="sq-col-side">
+            <div class="sq-card">
+              <h2 class="sq-card-title">Accuracy needed at 4/5 (+90 XP)</h2>
+              <ul class="sq-checklist" id="socrates-checklist">
+                <li class="done">✓ Accurate distinction and mechanism</li>
+                <li class="done">✓ Causal reasoning, not familiarity</li>
+                <li id="soc-crit-3">○ Evidence plus a counterexample</li>
+                <li id="soc-crit-4">○ A defensible practical comparison</li>
+              </ul>
+              <p class="sq-muted-xs sq-mt-xs">Complete all 4 criteria to finish the Socratic inquiry and earn +90 XP.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCREEN 9: BATTLE OF WITS DUEL -->
+      <section id="view-duels" class="sq-view">
+        <header class="sq-page-header sq-header-row">
+          <div>
+            <h1 class="sq-page-title">Battle of wits</h1>
+            <p class="sq-page-subtitle">XP duel · Alex vs Mia · Campus crew</p>
+          </div>
+          <div class="sq-header-actions">
+            <button class="sq-btn-secondary" id="btn-duel-reset">New duel</button>
+            <button class="sq-btn-secondary" data-nav="today">Leave duel</button>
+          </div>
+        </header>
+
+        <div class="sq-quest-detail-grid">
+          <div class="sq-col-main">
+            <div class="sq-battle-arena">
+              <div class="sq-battle-meta">
+                <span id="duel-round-badge">XP DUEL · ROUND 3 / 5</span>
+                <span class="sq-parry-timer" id="duel-timer-badge">Parry: 00:08.0</span>
+              </div>
+
+              <div class="sq-hp-bars">
+                <div class="sq-hp-side">
+                  <div class="sq-hp-names">
+                    <strong>Alex · Battle HP</strong>
+                    <span id="duel-alex-hp">80 / 100</span>
+                  </div>
+                  <div class="sq-bar-track"><div class="sq-bar-purple" id="duel-alex-bar" style="width:80%;"></div></div>
+                </div>
+                <div class="sq-hp-side">
+                  <div class="sq-hp-names">
+                    <strong>Mia · Battle HP</strong>
+                    <span id="duel-mia-hp">60 / 100</span>
+                  </div>
+                  <div class="sq-bar-track"><div class="sq-bar-green" id="duel-mia-bar" style="width:60%;"></div></div>
+                </div>
+              </div>
+
+              <div class="sq-arena-stage">
+                <div class="sq-fighter">🧑‍🎓</div>
+                <div class="sq-strike-box">
+                  <div class="sq-strike-label" id="duel-strike-title">RECALL STRIKE</div>
+                  <div class="sq-strike-val" id="duel-strike-val">−20</div>
+                  <div class="sq-strike-line">───●───★</div>
+                  <div class="sq-strike-sub" id="duel-strike-sub">Last turn · Mia −20 battle HP</div>
+                </div>
+                <div class="sq-fighter">🧑‍🔬</div>
+              </div>
+
+              <div class="sq-battle-foot">Win XP (+40 XP). Defeat costs −10 player HP.</div>
+            </div>
+
+            <div class="sq-card sq-mt-md">
+              <div class="sq-evade-banner">
+                <div class="sq-evade-top">
+                  <strong id="duel-challenge-banner">MIA ATTACKS · SELECT THE RIGHT CONCEPT MATCH</strong>
+                  <strong class="sq-timer-num" id="duel-round-timer">00:08.0</strong>
+                </div>
+                <div class="sq-muted-xs">Answer correctly to parry and deal 20 damage to Mia!</div>
+              </div>
+
+              <h2 class="sq-question-title" id="duel-question-title">Which pairing accurately defines Spacing?</h2>
+              <div class="sq-option-list" id="duel-options"></div>
+
+              <div class="sq-form-actions sq-mt-sm">
+                <button class="sq-btn-primary sq-btn-sm" id="btn-lock-pairs">Lock answer &amp; counter</button>
+              </div>
+              <div id="duel-game-end-banner" class="sq-game-over-banner" style="display:none;"></div>
+            </div>
+          </div>
+
+          <div class="sq-col-side">
+            <div class="sq-card">
+              <h2 class="sq-card-title">Set your next challenge</h2>
+              <p class="sq-muted-xs">Test Mia with a source-grounded question. Formats rotate during the duel.</p>
+
+              <div class="sq-field sq-mt-sm">
+                <label class="sq-field-label" for="duel-custom-q">Question for Mia</label>
+                <input id="duel-custom-q" class="sq-input" value="Put a retrieval-practice cycle in the correct order." />
+              </div>
+
+              <div class="sq-fairness-box">
+                <strong>AI fairness check · Passed</strong>
+                <div class="sq-muted-xs">3/5 challenge · 10-second QTE window</div>
+              </div>
+
+              <button class="sq-btn-primary sq-btn-block sq-mt-sm" id="btn-queue-challenge">Queue next challenge</button>
+            </div>
+
+            <div class="sq-dark-card">
+              <div class="sq-dark-top-line">
+                <span class="sq-dark-card-title">Win reward</span>
+                <span class="sq-dark-xp">+40 XP</span>
+              </div>
+              <p class="sq-dark-muted">Reduce Mia's Battle HP to 0 to win the duel and claim +40 XP!</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCREEN 10: REWARDS -->
+      <section id="view-profile" class="sq-view ix"></section>
+<section id="view-rewards" class="sq-view ix"></section>
+<section id="view-feed" class="sq-view ix"></section>
+<section id="view-leaderboard" class="sq-view ix"></section>
+    </main>
+  </div>
+
+  <!-- Toast notification -->
+  <div id="sq-toast" class="sq-toast" role="status" aria-live="polite"></div>
+
+  
+  <script>
+/* ============================================================
+   data.js — MOCK DATA
+   Everything the pages show comes from this one object.
+   When the backend is ready, replace these values with data
+   from your API (e.g. fetch('/api/me')) and keep the same shape.
+   ============================================================ */
+
+const DATA = {
+  // The logged-in player
+  user: {
+    id: 'alex',
+    name: 'Alex Morgan',
+    title: 'Knowledge seeker',
+    level: 12,
+    xp: 750,              // XP inside the current level
+    xpToNext: 1000,       // XP needed to reach the next level
+    streak: 5,            // days in a row
+    hp: 80,
+    maxHp: 100,
+    coins: 30,            // creator coins (earned when peers approve your quests)
+    cheatDays: 2,         // banked cheat days
+    commitments: 3,       // progress toward the next cheat day...
+    commitmentsPerDay: 5, // ...you need 5 completed commitments per cheat day
+    pausedUntil: null,    // set when a cheat day is used
+    questsDone: 47,
+    duelsWon: 6,
+    // Character customisation
+    outfitColor: '#6444d8',
+    owned: ['hoodie', 'dark', 'glasses'],
+    equipped: { outfit: 'hoodie', hair: 'dark', extra: 'glasses' }
+  },
+
+  // Items you can buy in the Rewards shop. slot = which part of the character it changes.
+  items: [
+    { id: 'hoodie',  slot: 'outfit', name: 'Study hoodie',   price: 0 },
+    { id: 'cape',    slot: 'outfit', name: 'Moonlight cape', price: 60 },
+    { id: 'dark',    slot: 'hair',   name: 'Classic dark',   price: 0,  color: '#2d2240' },
+    { id: 'lilac',   slot: 'hair',   name: 'Lilac dye',      price: 20, color: '#b9a3f2' },
+    { id: 'gold',    slot: 'hair',   name: 'Sunlit gold',    price: 25, color: '#e3b347' },
+    { id: 'glasses', slot: 'extra',  name: 'Round glasses',  price: 0 },
+    { id: 'hat',     slot: 'extra',  name: 'Wizard hat',     price: 50 }
+  ],
+
+  outfitColors: ['#6444d8', '#e48b6a', '#6fb495'],
+
+  // Rewards unlocked by reaching a level
+  levelRoad: [
+    { level: 10, reward: 'Party banner' },
+    { level: 12, reward: 'Outfit colours' },
+    { level: 13, reward: 'Night-sky balloon skin' },
+    { level: 15, reward: 'Duel title: “Debater”' },
+    { level: 20, reward: 'Golden dragon battle' }
+  ],
+
+  badges: [
+    { name: '5-day streak',   desc: 'Studied 5 days in a row',     earned: true,  icon: '🔥' },
+    { name: 'First duel win', desc: 'Won an XP duel',              earned: true,  icon: '⚔️' },
+    { name: 'Fair judge',     desc: 'Rated 10 crew quests',        earned: true,  icon: '⚖️' },
+    { name: 'Dragon slayer',  desc: 'Beat 10 dragon battles',      earned: false, icon: '🐉' },
+    { name: 'Socratic mind',  desc: 'Finish a 5/5 Socrates talk',  earned: false, icon: '🏛️' },
+    { name: 'Marathon',       desc: '30-day streak',               earned: false, icon: '🏃' }
+  ],
+
+  // Players for the leaderboard + team feed. group 'crew' = your private study party.
+  players: [
+    { id: 'mia',   name: 'Mia Chen',      level: 14, weeklyXp: 1820, totalXp: 14200, streak: 9,  group: 'crew' },
+    { id: 'noah',  name: 'Noah Williams', level: 13, weeklyXp: 1600, totalXp: 12950, streak: 3,  group: 'crew' },
+    { id: 'alex',  name: 'Alex Morgan',   level: 12, weeklyXp: 1450, totalXp: 11750, streak: 5,  group: 'crew' },
+    { id: 'priya', name: 'Priya Shah',    level: 16, weeklyXp: 2140, totalXp: 18400, streak: 12, group: 'campus' },
+    { id: 'jonas', name: 'Jonas Weber',   level: 15, weeklyXp: 1710, totalXp: 16300, streak: 7,  group: 'campus' },
+    { id: 'sara',  name: 'Sara Okafor',   level: 11, weeklyXp: 1290, totalXp: 10100, streak: 4,  group: 'campus' },
+    { id: 'leo',   name: 'Leo Park',      level: 9,  weeklyXp: 980,  totalXp: 7600,  streak: 1,  group: 'campus' }
+  ],
+
+  crew: { name: 'Campus crew', privacy: 'Private' },
+
+  // Team newsfeed. type is used for the filter chips.
+  feed: [
+    { id: 1, who: 'mia',  type: 'quest',  text: 'completed “Recall the forgetting curve”', detail: 'Dragon battle · Psychology', xp: '+60 XP', time: '25 min ago', likes: 2 },
+    { id: 2, who: 'alex', type: 'rating', text: 'got “Finish problem set” approved by 2 / 2 peers', detail: 'Peer difficulty 4/5', xp: '+30 coins', time: '1 h ago', likes: 1 },
+    { id: 3, who: 'noah', type: 'quest',  text: 'created a crew quest “Practice biology diagrams”', detail: 'Balloon barrage · Biology · 25 min', xp: '', time: '3 h ago', likes: 3 },
+    { id: 4, who: 'alex', type: 'duel',   text: 'won a Battle of wits against Mia', detail: 'XP duel · 5 rounds', xp: '+40 XP', time: '5 h ago', likes: 4 },
+    { id: 5, who: 'mia',  type: 'level',  text: 'reached Level 14', detail: 'Knowledge seeker', xp: '', time: 'Yesterday', likes: 5 },
+    { id: 6, who: 'noah', type: 'quest',  text: 'completed “Review flashcards”', detail: 'Balloon barrage · Biology', xp: '+50 XP', time: 'Yesterday', likes: 1 }
+  ],
+
+  // Filled in by the app (and saved in localStorage)
+  myPosts: [],  // updates the user writes in the feed
+  liked: []     // ids of feed posts the user gave kudos to
+};
+
+/* ============================================================
+   app.js — renders the 4 pages: Profile, Rewards, Team feed, Leaderboards
+
+   How it works:
+   1. data.js defines DATA (mock data).
+   2. load() restores the few things the user changed (localStorage).
+   3. Each page has a renderX() function that builds HTML with template
+      strings and puts it into its <section>.
+   4. The URL hash (#profile, #rewards, ...) decides which page is shown.
+   5. Buttons have data-action="..." and are handled in ONE click listener
+      at the bottom (ACTIONS object). After an action we re-render the page.
+   ============================================================ */
+
+const ui = { charTab: 'outfit', shopFilter: 'all', feedFilter: 'all', lbScope: 'crew', lbPeriod: 'weeklyXp' };
+
+function save() { if (typeof persistAll === 'function') persistAll(); }
+function load() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('sidequest-v2'));
+    if (!saved) return;
+    Object.assign(DATA.user, saved.user);
+    DATA.myPosts = saved.myPosts || [];
+    DATA.liked = saved.liked || [];
+    window.__savedGame = saved.game;
+  } catch (e) { /* ignore broken data */ }
+}
+
+/* ---------- Small helpers ---------- */
+const $ = (selector) => document.querySelector(selector);
+
+// Always escape text the user typed before putting it into innerHTML
+function esc(text) {
+  return String(text).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+function player(id) { return DATA.players.find(p => p.id === id); }
+function item(id) { return DATA.items.find(i => i.id === id); }
+
+function bar(value, max, style = '') {
+  const pct = Math.min(100, Math.round(value / max * 100));
+  return `<div class="bar ${style}"><span style="width:${pct}%"></span></div>`;
+}
+
+// Coloured circle with initials, e.g. "MC" for Mia Chen
+const FACE_COLORS = ['#6444d8', '#e48b6a', '#6fb495', '#d0679a', '#4a90c2', '#c0952b', '#8a6fd1'];
+function face(id) {
+  const p = player(id);
+  const initials = p.name.split(' ').map(w => w[0]).join('');
+  const color = FACE_COLORS[DATA.players.indexOf(p) % FACE_COLORS.length];
+  return `<div class="face" style="background:${color}">${initials}</div>`;
+}
+
+function toast(message) { showToast(message); }
+
+/* ---------- The character, drawn as a small SVG ----------
+   look = { outfit, hair, extra, color }. Change these and the drawing changes. */
+function avatarSVG(look) {
+  const hairColor = item(look.hair).color;
+  return `
+  <svg class="avatar" viewBox="0 0 120 140" aria-label="Your character">
+    ${look.outfit === 'cape' ? '<path d="M28 80 Q60 66 92 80 L106 138 L14 138Z" fill="#2b2f6b"/><circle cx="96" cy="124" r="5" fill="#f4e7a1"/>' : ''}
+    <rect x="34" y="74" width="52" height="64" rx="20" fill="${look.color}"/>
+    <path d="M52 80 v14 M68 80 v14" stroke="#fff" stroke-width="2" opacity=".6"/>
+    <circle cx="60" cy="48" r="24" fill="#9a6440"/>
+    <path d="M35 47 Q33 19 60 19 Q87 19 85 47 Q80 33 69 33 Q60 28 50 33 Q40 34 35 47Z" fill="${hairColor}"/>
+    <circle cx="51" cy="50" r="2.5" fill="#222"/><circle cx="69" cy="50" r="2.5" fill="#222"/>
+    <path d="M53 60 Q60 65 67 60" stroke="#222" stroke-width="2" fill="none" stroke-linecap="round"/>
+    ${look.extra === 'glasses' ? '<g stroke="#222" stroke-width="2" fill="none"><circle cx="51" cy="50" r="7"/><circle cx="69" cy="50" r="7"/><path d="M58 50 h4"/></g>' : ''}
+    ${look.extra === 'hat' ? '<path d="M30 32 L90 32 L62 2Z" fill="#4b2f9e"/><circle cx="62" cy="18" r="3" fill="#f4e7a1"/>' : ''}
+  </svg>`;
+}
+
+// The user's current look
+function myLook() {
+  const u = DATA.user;
+  return { ...u.equipped, color: u.outfitColor };
+}
+
+/* ============================================================
+   PAGE 1 — PROFILE
+   ============================================================ */
+function renderProfile() {
+  const u = DATA.user;
+  const myActivity = allPosts().filter(p => p.who === u.id).slice(0, 3);
+
+  $('#view-profile').innerHTML = `
+    <div class="page-head">
+      <div>
+        <h1>${esc(u.name)}</h1>
+        <p class="muted">A little wiser. A little stronger.</p>
+      </div>
+      <a class="btn light" href="#" data-go="rewards" style="text-decoration:none">Open rewards</a>
+    </div>
+
+    <div class="grid-2">
+      <div class="stack">
+        ${heroCard()}
+
+        <div class="stats">
+          ${statCard('Weekly XP', player(u.id).weeklyXp.toLocaleString())}
+          ${statCard('Quests done', u.questsDone)}
+          ${statCard('Duels won', u.duelsWon)}
+          ${statCard('Creator coins', u.coins)}
+        </div>
+
+        <div class="card">
+          <div class="spread"><h3>Badges</h3><a class="small" href="#" data-go="rewards">See all</a></div>
+          <div class="badges">${DATA.badges.filter(b => b.earned).map(badgeHTML).join('')}</div>
+        </div>
+
+        <div class="card">
+          <h3>Recent activity</h3>
+          ${myActivity.map(postHTML).join('') || '<p class="muted">Nothing yet — go complete a quest!</p>'}
+        </div>
+      </div>
+
+      <div class="stack">
+        ${characterCard()}
+        ${hpCard()}
+      </div>
+    </div>`;
+}
+
+function heroCard() {
+  const u = DATA.user;
+  return `
+    <div class="card dark">
+      <div class="row" style="margin-bottom:16px">
+        <div class="lvl"><small>LVL</small>${u.level}</div>
+        <div>
+          <div class="hero-title">${esc(u.title)}</div>
+          <p class="muted">Level ${u.level + 1} unlocks: ${nextUnlock()}</p>
+        </div>
+      </div>
+      <div class="spread small" style="margin-bottom:6px">
+        <b>${u.xp.toLocaleString()} / ${u.xpToNext.toLocaleString()} XP</b><span>Level ${u.level + 1}</span>
+      </div>
+      ${bar(u.xp, u.xpToNext, 'lime')}
+      <div class="spread small" style="margin-top:10px">
+        <span style="color:var(--lime)">🔥 ${u.streak}-day streak</span>
+        <span class="muted">${u.xpToNext - u.xp} XP to your next unlock</span>
+      </div>
+    </div>`;
+}
+
+function statCard(label, value) {
+  return `<div class="card stat"><b>${value}</b><span class="muted small">${label}</span></div>`;
+}
+
+function characterCard() {
+  const u = DATA.user;
+  const ownedInSlot = DATA.items.filter(i => i.slot === ui.charTab && u.owned.includes(i.id));
+  return `
+    <div class="card">
+      <div class="spread"><h3>Your character</h3><span class="tag">Equipped</span></div>
+      <div class="avatar-box">${avatarSVG(myLook())}</div>
+
+      <div class="tabs">
+        ${['outfit', 'hair', 'extra'].map(slot => `
+          <button class="chip ${ui.charTab === slot ? 'on' : ''}" data-action="charTab" data-id="${slot}">
+            ${slot === 'extra' ? 'Extras' : slot[0].toUpperCase() + slot.slice(1)}
+          </button>`).join('')}
+      </div>
+
+      <div class="chips">
+        ${ownedInSlot.map(i => `
+          <button class="chip ${u.equipped[i.slot] === i.id ? 'on' : ''}" data-action="equip" data-id="${i.id}">${i.name}</button>
+        `).join('')}
+      </div>
+
+      <div class="spread" style="margin-bottom:14px">
+        <span class="muted small">Outfit colour</span>
+        <div class="row" style="gap:8px">
+          ${DATA.outfitColors.map(c => `
+            <button class="swatch ${u.outfitColor === c ? 'on' : ''}" style="background:${c}"
+              data-action="setColor" data-id="${c}" aria-label="Colour ${c}"></button>`).join('')}
+        </div>
+      </div>
+      <a class="btn block" href="#" data-go="rewards" style="display:block;text-align:center;text-decoration:none">Get more looks</a>
+    </div>`;
+}
+
+// HP + cheat days strip (same idea as the bottom-right card in the Figma "Today" page)
+function hpCard() {
+  const u = DATA.user;
+  const paused = u.pausedUntil && u.pausedUntil > Date.now();
+  return `
+    <div class="card hp">
+      <div class="spread small" style="margin-bottom:6px">
+        <b>${u.hp} / ${u.maxHp} HP</b><b>${u.cheatDays} cheat days banked</b>
+      </div>
+      ${bar(u.hp, u.maxHp, 'green')}
+      <p class="small muted" style="margin:10px 0">
+        ${u.commitments} / ${u.commitmentsPerDay} commitments toward your next cheat day.
+        Missed signed-up deadlines cost 20 HP.
+      </p>
+      ${paused
+        ? `<p class="small"><b>⏸ Deadlines paused until ${new Date(u.pausedUntil).toLocaleString([], { weekday: 'short', hour: '2-digit', minute: '2-digit' })}</b></p>`
+        : `<button class="btn white block" data-action="useCheatDay" ${u.cheatDays ? '' : 'disabled'}>Use cheat day · Pause 24h</button>`}
+    </div>`;
+}
+
+function badgeHTML(b) {
+  return `
+    <div class="badge ${b.earned ? '' : 'locked'}" title="${b.desc}">
+      <div class="icon">${b.icon}</div>
+      <b class="small">${b.name}</b>
+      <p class="small muted">${b.desc}</p>
+    </div>`;
+}
+
+function nextUnlock() {
+  const next = DATA.levelRoad.find(r => r.level > DATA.user.level);
+  return next ? next.reward : 'more to come';
+}
+
+/* ============================================================
+   PAGE 2 — REWARDS
+   ============================================================ */
+function renderRewards() {
+  const u = DATA.user;
+  const items = DATA.items.filter(i => ui.shopFilter === 'all' || i.slot === ui.shopFilter);
+
+  $('#view-rewards').innerHTML = `
+    <div class="page-head">
+      <div>
+        <h1>Rewards</h1>
+        <p class="muted">Spend creator coins on looks. Keep commitments to earn cheat days.</p>
+      </div>
+    </div>
+
+    <div class="grid-3" style="margin-bottom:20px">
+      <div class="card dark">
+        <p class="muted small">Creator coins</p>
+        <div class="hero-title" style="font-size:30px">🪙 ${u.coins}</div>
+        <p class="muted small">Earned when peers approve quests you create.</p>
+        <button class="btn white" style="margin-top:10px" data-action="claimCoin">+10 creator coins (demo)</button>
+      </div>
+      <div class="card hp">
+        <p class="muted small">Cheat days</p>
+        <div class="hero-title" style="font-size:30px">${u.cheatDays} banked</div>
+        <p class="small muted" style="margin:6px 0">${u.commitments} / ${u.commitmentsPerDay} toward the next one</p>
+        ${bar(u.commitments, u.commitmentsPerDay, 'green')}
+      </div>
+      <div class="card soft">
+        <p class="muted small">Next level unlock</p>
+        <div class="hero-title">${nextUnlock()}</div>
+        <p class="small muted" style="margin:6px 0">${u.xpToNext - u.xp} XP to go</p>
+        ${bar(u.xp, u.xpToNext)}
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:20px">
+      <div class="spread"><h2>Character shop</h2></div>
+      <div class="chips">
+        ${[['all', 'All'], ['outfit', 'Outfits'], ['hair', 'Hair'], ['extra', 'Extras']].map(([key, label]) => `
+          <button class="chip ${ui.shopFilter === key ? 'on' : ''}" data-action="shopFilter" data-id="${key}">${label}</button>`).join('')}
+      </div>
+      <div class="shop">${items.map(shopItemHTML).join('')}</div>
+    </div>
+
+    <div class="card" style="margin-bottom:20px">
+      <h2>Level road</h2>
+      <div class="road">
+        ${DATA.levelRoad.map(r => {
+          const done = r.level <= u.level;
+          const isNext = r.level === DATA.levelRoad.find(x => x.level > u.level)?.level;
+          return `<div class="road-step ${done ? 'done' : ''} ${isNext ? 'next' : ''}">
+            <b>Level ${r.level}</b>${done ? '✓ ' : ''}${r.reward}</div>`;
+        }).join('')}
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Badges</h2>
+      <div class="badges">${DATA.badges.map(badgeHTML).join('')}</div>
+    </div>`;
+}
+
+function shopItemHTML(i) {
+  const u = DATA.user;
+  const owned = u.owned.includes(i.id);
+  const equipped = u.equipped[i.slot] === i.id;
+  // Preview = your character wearing this item
+  const preview = avatarSVG({ ...myLook(), [i.slot]: i.id });
+
+  let button;
+  if (equipped) button = `<button class="btn light block" disabled>Equipped</button>`;
+  else if (owned) button = `<button class="btn light block" data-action="equip" data-id="${i.id}">Equip</button>`;
+  else if (u.coins >= i.price) button = `<button class="btn block" data-action="buy" data-id="${i.id}">Buy · ${i.price} coins</button>`;
+  else button = `${bar(u.coins, i.price)}<button class="btn block" disabled>${u.coins} / ${i.price} coins</button>`;
+
+  return `
+    <div class="item ${equipped ? 'equipped' : ''}">
+      ${preview}
+      <div class="spread"><b>${i.name}</b><span class="tag">${i.slot}</span></div>
+      ${button}
+    </div>`;
+}
+
+/* ============================================================
+   PAGE 3 — TEAM NEWSFEED
+   ============================================================ */
+function allPosts() {
+  return [...DATA.myPosts, ...DATA.feed]; // newest (user's own) first
+}
+
+function renderFeed() {
+  const crew = DATA.players.filter(p => p.group === 'crew');
+  const posts = allPosts().filter(p => ui.feedFilter === 'all' || p.type === ui.feedFilter || (ui.feedFilter === 'message' && p.type === 'post'));
+
+  $('#view-feed').innerHTML = `
+    <div class="page-head">
+      <div>
+        <h1>${DATA.crew.name}</h1>
+        <p class="muted">${crew.length} members · ${DATA.crew.privacy} · see what your party is up to</p>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="stack">
+        <form class="card composer" id="post-form">
+          <textarea id="post-text" maxlength="300" placeholder="Write a message to your crew… (Enter to send, Shift+Enter for a new line)"></textarea>
+          <div class="spread">
+            <span class="muted small">Only your crew can see this. Quest results, duels, level-ups and peer ratings appear here automatically.</span>
+            <button class="btn" type="submit">Post</button>
+          </div>
+        </form>
+
+        <div>
+          <div class="chips">
+            ${[['all', 'All'], ['message', 'Messages'], ['rating', 'Peer ratings'], ['quest', 'Quests'], ['duel', 'Duels'], ['level', 'Level ups']].map(([key, label]) => `
+              <button class="chip ${ui.feedFilter === key ? 'on' : ''}" data-action="feedFilter" data-id="${key}">${label}</button>`).join('')}
+          </div>
+          <div class="card">
+            ${posts.map(postHTML).join('') || '<p class="muted">No posts here yet.</p>'}
+          </div>
+        </div>
+      </div>
+
+      <div class="stack">
+        <div class="card">
+          <div class="spread"><h3>Party members</h3><span class="muted small">THIS WEEK</span></div>
+          ${crew.map(p => `
+            <div class="spread" style="margin-bottom:12px">
+              <div class="row">${face(p.id)}
+                <div><b>${p.id === DATA.user.id ? 'You' : p.name}</b><div class="muted small">Lvl ${p.level} · 🔥 ${p.streak}</div></div>
+              </div>
+              ${p.id === DATA.user.id
+                ? `<span class="xp">${p.weeklyXp.toLocaleString()} XP</span>`
+                : `<button class="btn light" data-action="duel" data-id="${p.id}">Duel</button>`}
+            </div>`).join('')}
+          <a class="btn light block" href="#" data-go="leaderboard" style="display:block;text-align:center;text-decoration:none">View leaderboard</a>
+        </div>
+      </div>
+    </div>`;
+}
+
+const TYPE_LABELS = { quest: 'Quest', duel: 'Duel', rating: 'Peer rating', level: 'Level up', message: 'Message', post: 'Message' };
+
+// Add an entry to the crew feed (used by messages AND by automatic events: ratings, quests, duels, level-ups)
+let _postId = Date.now();
+function addFeedPost({ type, text, detail = '', xp = '', quote = '' }) {
+  DATA.myPosts.unshift({ id: ++_postId, ts: Date.now(), who: DATA.user.id, type, text, detail, xp, quote, time: 'Just now', likes: 0 });
+  DATA.myPosts = DATA.myPosts.slice(0, 50);
+  save();
+}
+
+function relTime(ts) {
+  const min = Math.floor((Date.now() - ts) / 60000);
+  if (min < 1) return 'Just now';
+  if (min < 60) return `${min} min ago`;
+  const h = Math.floor(min / 60);
+  if (h < 24) return `${h} h ago`;
+  return h < 48 ? 'Yesterday' : `${Math.floor(h / 24)} days ago`;
+}
+
+function postHTML(p) {
+  const who = player(p.who);
+  const liked = DATA.liked.includes(p.id);
+  const likes = (p.likes || 0) + (liked ? 1 : 0);
+  const mine = p.who === DATA.user.id;
+  const name = mine ? 'You' : who.name;
+  const isMsg = p.type === 'message' || p.type === 'post';
+  // old saved messages were stored as: posted: “text”
+  const msgText = String(p.text).replace(/^posted: “([\s\S]*)”$/, '$1');
+  return `
+    <div class="post">
+      ${face(p.who)}
+      <div class="post-body">
+        <div class="spread">
+          <div><b>${name}</b>${isMsg ? '' : ' ' + esc(p.text)}</div>
+          ${p.xp ? `<span class="xp">${esc(p.xp)}</span>` : ''}
+        </div>
+        ${isMsg ? `<div class="msg-bubble">${esc(msgText)}</div>` : ''}
+        ${p.detail ? `<p class="muted small" style="margin-top:2px">${esc(p.detail)}</p>` : ''}
+        ${p.quote ? `<blockquote class="post-quote">“${esc(p.quote)}”</blockquote>` : ''}
+        <div class="row small" style="margin-top:8px">
+          <span class="tag">${TYPE_LABELS[p.type] || 'Update'}</span>
+          <span class="muted">${p.ts ? relTime(p.ts) : esc(p.time)}</span>
+          <button class="kudos ${liked ? 'on' : ''}" data-action="like" data-id="${p.id}">👏 ${likes}</button>
+          ${mine && p.ts ? `<button class="kudos" data-action="deletePost" data-id="${p.id}" title="Delete">🗑</button>` : ''}
+        </div>
+      </div>
+    </div>`;
+}
+
+/* ============================================================
+   PAGE 4 — LEADERBOARDS
+   ============================================================ */
+function renderLeaderboard() {
+  const key = ui.lbPeriod; // 'weeklyXp' or 'totalXp'
+  const list = DATA.players
+    .filter(p => ui.lbScope === 'all' || p.group === 'crew')
+    .sort((a, b) => b[key] - a[key]);
+
+  const myIndex = list.findIndex(p => p.id === DATA.user.id);
+  const ahead = list[myIndex - 1];
+  const message = ahead
+    ? `Just ${(ahead[key] - list[myIndex][key]).toLocaleString()} XP from #${myIndex} place. You've got this.`
+    : `You're #1. Defend your spot!`;
+
+  const medals = ['🥇', '🥈', '🥉'];
+  const top3 = list.slice(0, 3);
+  const podiumOrder = [top3[1], top3[0], top3[2]].filter(Boolean); // 2nd, 1st, 3rd
+
+  $('#view-leaderboard').innerHTML = `
+    <div class="page-head">
+      <div>
+        <h1>Leaderboards</h1>
+        <p class="muted">Compare your effort, not your grades. XP follows real difficulty and effort.</p>
+      </div>
+    </div>
+
+    <div class="spread" style="flex-wrap:wrap">
+      <div class="chips">
+        <button class="chip ${ui.lbScope === 'crew' ? 'on' : ''}" data-action="lbScope" data-id="crew">Campus crew</button>
+        <button class="chip ${ui.lbScope === 'all' ? 'on' : ''}" data-action="lbScope" data-id="all">Whole campus</button>
+      </div>
+      <div class="chips">
+        <button class="chip ${key === 'weeklyXp' ? 'on' : ''}" data-action="lbPeriod" data-id="weeklyXp">This week</button>
+        <button class="chip ${key === 'totalXp' ? 'on' : ''}" data-action="lbPeriod" data-id="totalXp">All time</button>
+      </div>
+    </div>
+
+    <div class="podium">
+      ${podiumOrder.map(p => {
+        const rank = list.indexOf(p);
+        return `
+          <div class="card ${rank === 0 ? 'first' : ''}">
+            <div class="medal">${medals[rank]}</div>
+            ${face(p.id)}
+            <b>${p.id === DATA.user.id ? 'You' : p.name}</b>
+            <div class="xp">${p[key].toLocaleString()} XP</div>
+          </div>`;
+      }).join('')}
+    </div>
+
+    <div class="card soft" style="margin-bottom:20px">📈 ${message}</div>
+
+    <div class="card">
+      ${list.map((p, i) => `
+        <div class="lb-row ${p.id === DATA.user.id ? 'you' : ''}">
+          <span class="lb-rank">${String(i + 1).padStart(2, '0')}</span>
+          ${face(p.id)}
+          <span>${p.id === DATA.user.id ? 'You' : p.name}</span>
+          <span class="muted small hide-sm">Lvl ${p.level} · 🔥 ${p.streak}</span>
+          <span class="xp" style="text-align:right">${p[key].toLocaleString()} XP</span>
+        </div>`).join('')}
+    </div>`;
+}
+
+/* ============================================================
+   ACTIONS — what each data-action button does
+   ============================================================ */
+const ACTIONS = {
+  charTab(slot) { ui.charTab = slot; },
+  shopFilter(slot) { ui.shopFilter = slot; },
+  feedFilter(type) { ui.feedFilter = type; },
+  lbScope(scope) { ui.lbScope = scope; },
+  lbPeriod(period) { ui.lbPeriod = period; },
+
+  setColor(color) { DATA.user.outfitColor = color; save(); },
+
+  equip(id) {
+    const it = item(id);
+    const eq = DATA.user.equipped;
+    // Clicking an equipped extra takes it off; outfit/hair always need something
+    eq[it.slot] = (it.slot === 'extra' && eq.extra === id) ? null : id;
+    save();
+  },
+
+  buy(id) {
+    const it = item(id);
+    const u = DATA.user;
+    if (u.coins < it.price || u.owned.includes(id)) return;
+    u.coins -= it.price;
+    u.owned.push(id);
+    u.equipped[it.slot] = id;
+    save();
+    toast(`Unlocked ${it.name}! 🎉`);
+  },
+
+  useCheatDay() {
+    const u = DATA.user;
+    if (!u.cheatDays) return;
+    u.cheatDays -= 1;
+    u.pausedUntil = Date.now() + 24 * 60 * 60 * 1000;
+    save();
+    toast('Deadlines paused for 24h. Rest up!');
+  },
+
+  like(id) {
+    id = Number(id);
+    const i = DATA.liked.indexOf(id);
+    if (i === -1) DATA.liked.push(id); else DATA.liked.splice(i, 1);
+    save();
+  },
+
+  claimCoin() { DATA.user.coins += 10; save(); toast('+10 creator coins added!'); },
+  deletePost(id) { id = Number(id); DATA.myPosts = DATA.myPosts.filter(p => p.id !== id); save(); toast('Post deleted'); },
+  duel(id) { toast(`Duel request sent to ${player(id).name} ⚔️`); setTimeout(() => navigateTo('duels'), 400); }
+};
+
+// One listener for every button on every page ("event delegation")
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-action]');
+  if (!btn || btn.disabled) return;
+  ACTIONS[btn.dataset.action](btn.dataset.id);
+  render();
+});
+
+// Posting a message in the crew chat
+function sendCrewMessage() {
+  const box = $('#post-text');
+  const text = box ? box.value.trim() : '';
+  if (!text) return;
+  addFeedPost({ type: 'message', text });
+  ui.feedFilter = 'all';
+  render();
+  const again = $('#post-text');
+  if (again) again.focus();
+}
+document.addEventListener('submit', (e) => {
+  if (e.target.id !== 'post-form') return;
+  e.preventDefault();
+  sendCrewMessage();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.target.id === 'post-text' && e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendCrewMessage();
+  }
+});
+
+
+load();
+  </script>
+  <script>
+
+    const BASE_CAPE_GOAL = 60;
+    const DAILY_VICTORY_STORAGE_KEY = "sq_dragon_victory_day_v1";
+
+    function getTodayDateKey() {
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = String(now.getMonth() + 1).padStart(2, "0");
+      const d = String(now.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
+    }
+
+    function computeCapeLevelAndGoal(coins) {
+      const safeCoins = Math.max(0, Number(coins) || 0);
+      let level = 1;
+      let goal = BASE_CAPE_GOAL;
+      // Above 60 coins (coins > goal) a new level opens with a goal 2x bigger
+      while (safeCoins > goal) {
+        level += 1;
+        goal *= 2;
+      }
+      return { level, goal };
+    }
+
+    const state = {
+      view: "today",
+      level: 12,
+      xp: 750,
+      xpGoal: 1000,
+      hp: 80,
+      outfitColor: "#6c47ff",
+      charTab: "Outfit",
+      capeEquipped: false,
+      coins: 30,
+      cheatDays: 2,
+      commitmentsTowardCheatDay: 3,
+      dragonHp: 100,
+      dragonLogged: false,
+      dragonQIndex: 0,
+      dragonTimerSec: 8.0,
+      dragonOutcome: null, // null | "victory" | "defeat"
+      dragonOutcomeMsg: "",
+      balloonWave: 0,
+      balloonHitsInWave: 0,
+      labyrinthFork: 0,
+      labyrinthElapsedSec: 525,
+      socratesScore: 2,
+      duelAlexHp: 80,
+      duelMiaHp: 60,
+      duelRound: 3,
+      questDone: {
+        dragon: false,
+        labyrinth: false,
+        balloon: true
+      },
+      partyRated: false,
+      ratings: {},
+      ratingSel: "socrates"
+    };
+
+    // --- ONE source of truth: state.* proxies DATA.user.* (profile, shop, HP, coins) ---
+    ["level", "xp", "hp", "coins", "cheatDays", "outfitColor"].forEach((k) => {
+      Object.defineProperty(state, k, { get: () => DATA.user[k], set: (v) => { DATA.user[k] = v; }, enumerable: true, configurable: true });
+    });
+    Object.defineProperty(state, "xpGoal", { get: () => DATA.user.xpToNext, set: (v) => { DATA.user.xpToNext = v; }, enumerable: true, configurable: true });
+    Object.defineProperty(state, "commitmentsTowardCheatDay", { get: () => DATA.user.commitments, set: (v) => { DATA.user.commitments = v; }, enumerable: true, configurable: true });
+
+    const DRAGON_QUESTIONS = [
+      {
+        fmt: "short",
+        title: "Complete the idea before the flame hits.",
+        prompt: "Retrieval practice strengthens memory by ____ information without looking.",
+        placeholder: "Type missing word (e.g. recalling)",
+        defaultVal: "recalling",
+        check: (val) => val.toLowerCase().includes("recall")
+      },
+      {
+        fmt: "choice",
+        title: "Choose the strongest defense against the forgetting curve.",
+        prompt: "Which study schedule produces the highest retention 30 days later?",
+        options: [
+          "Rereading highlighted notes four times in one evening",
+          "Spacing active recall sessions over expanding intervals",
+          "Copying definitions word-for-word before the exam"
+        ],
+        correctIdx: 1
+      },
+      {
+        fmt: "order",
+        title: "Order the retrieval cycle to launch a counter-strike!",
+        prompt: "Select the sequence that starts with testing memory from a blank page:",
+        options: [
+          "1. Close notes → 2. Recall actively → 3. Check accuracy → 4. Space next review",
+          "1. Highlight text → 2. Reread summary → 3. Close book → 4. Skip testing",
+          "1. Check answers → 2. Memorise list → 3. Repeat immediately → 4. Finish"
+        ],
+        correctIdx: 0
+      },
+      {
+        fmt: "match",
+        title: "Match the memory mechanism to strike the final blow!",
+        prompt: "Which pairing correctly distinguishes Recognition from Recall?",
+        options: [
+          "Recognition = retrieving without cues; Recall = identifying familiar options",
+          "Recognition = identifying familiar cues; Recall = retrieving without cues",
+          "Both rely identically on passive exposure"
+        ],
+        correctIdx: 1
+      }
+    ];
+
+    const BALLOON_WAVES = [
+      {
+        prompt: "Shoot the main sites of protein synthesis and folding.",
+        targets: [
+          { id: "ribosome", label: "Ribosome", color: "b-purple", correct: true, info: "Ribosomes translate mRNA into polypeptide chains." },
+          { id: "rough-er", label: "Rough ER", color: "b-green", correct: true, info: "Rough ER folds and modifies newly synthesised proteins." },
+          { id: "cell-wall", label: "Cell wall", color: "b-amber", correct: false, info: "Distractor: Cell wall provides structural rigidity, not protein synthesis." }
+        ]
+      },
+      {
+        prompt: "Wave 2: Shoot the two organelles containing their own DNA.",
+        targets: [
+          { id: "mito", label: "Mitochondria", color: "b-purple", correct: true, info: "Mitochondria carry circular mtDNA for ATP respiration." },
+          { id: "chloro", label: "Chloroplast", color: "b-green", correct: true, info: "Chloroplasts carry plastid DNA for photosynthesis." },
+          { id: "golgi", label: "Golgi body", color: "b-amber", correct: false, info: "Distractor: The Golgi apparatus packages proteins but lacks its own genome." }
+        ]
+      },
+      {
+        prompt: "Wave 3: Shoot the two stages that occur inside the nucleus.",
+        targets: [
+          { id: "transc", label: "Transcription", color: "b-purple", correct: true, info: "DNA is transcribed into pre-mRNA inside the nucleus." },
+          { id: "splicing", label: "RNA Splicing", color: "b-green", correct: true, info: "Introns are removed from pre-mRNA before nuclear export." },
+          { id: "transl", label: "Translation", color: "b-amber", correct: false, info: "Distractor: Translation happens on ribosomes in the cytoplasm/Rough ER." }
+        ]
+      }
+    ];
+
+    const LABYRINTH_FORKS = [
+      {
+        question: "Solve 2x + 5 = 17. Which way will you go?",
+        hint: "Subtract 5 from both sides first: 2x = 12.",
+        options: [
+          { dir: "Left", label: "x = 4", correct: false },
+          { dir: "Ahead", label: "x = 6", correct: true },
+          { dir: "Right", label: "x = 8", correct: false }
+        ]
+      },
+      {
+        question: "Gate 2: If f(x) = 3x² − 2, what is f(3)?",
+        hint: "Square 3 first (9), multiply by 3 (27), then subtract 2.",
+        options: [
+          { dir: "Left", label: "25", correct: true },
+          { dir: "Ahead", label: "79", correct: false },
+          { dir: "Right", label: "16", correct: false }
+        ]
+      },
+      {
+        question: "Gate 3: Solve log₂(x) = 5.",
+        hint: "Rewrite in exponential form: x = 2⁵.",
+        options: [
+          { dir: "Left", label: "x = 10", correct: false },
+          { dir: "Ahead", label: "x = 25", correct: false },
+          { dir: "Right", label: "x = 32", correct: true }
+        ]
+      },
+      {
+        question: "Final Gate 4: What is the derivative of 4x³ + 2x?",
+        hint: "Apply the power rule: 3·4x² + 2.",
+        options: [
+          { dir: "Left", label: "12x² + 2", correct: true },
+          { dir: "Ahead", label: "4x² + 2", correct: false },
+          { dir: "Right", label: "12x³ + 2", correct: false }
+        ]
+      }
+    ];
+
+    const DUEL_ROUNDS = [
+      {
+        question: "Which pairing accurately defines Spacing?",
+        options: [
+          "Spacing → Revisiting material after time intervals",
+          "Spacing → Highlighting key sentences repeatedly",
+          "Spacing → Reading notes right before sleep only"
+        ],
+        correctIdx: 0
+      },
+      {
+        question: "Why does active recall beat passive rereading?",
+        options: [
+          "It feels easier and produces faster fluency",
+          "Retrieval effort strengthens memory trace reconstruction",
+          "It eliminates the need for feedback"
+        ],
+        correctIdx: 1
+      },
+      {
+        question: "Final Blow: What happens when a cheat day is redeemed before a deadline?",
+        options: [
+          "It automatically grants full XP for unstarted quests",
+          "It pauses deadlines and missed-task HP damage for 24h",
+          "It heals +50 HP during an active duel"
+        ],
+        correctIdx: 1
+      }
+    ];
+
+    const toastEl = document.getElementById("sq-toast");
+    let toastTimer = null;
+    function showToast(msg) {
+      toastEl.textContent = msg;
+      toastEl.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toastEl.classList.remove("show"), 3200);
+    }
+
+    const LS_KEY = "sidequest-v2";
+    const API_HEADERS = { "Content-Type": "application/json" };
+    let pushTimer = null;
+    function setSyncStatus(ok) {
+      const el = document.getElementById("backend-sync-status");
+      if (el) el.textContent = ok ? "● Backend connected" : "● Local mode (offline)";
+    }
+    function snapshot() {
+      return {
+        user: DATA.user,
+        game: {
+          dragonHp: state.dragonHp, dragonQIndex: state.dragonQIndex, balloonWave: state.balloonWave,
+          labyrinthFork: state.labyrinthFork, labyrinthElapsedSec: state.labyrinthElapsedSec,
+          duelAlexHp: state.duelAlexHp, duelMiaHp: state.duelMiaHp, duelRound: state.duelRound,
+          partyRated: state.partyRated, ratings: state.ratings, questDone: state.questDone
+        },
+        myPosts: DATA.myPosts.slice(0, 50),
+        liked: DATA.liked
+      };
+    }
+    function applyGame(g) {
+      if (!g) return;
+      ["dragonHp", "dragonQIndex", "balloonWave", "labyrinthFork", "labyrinthElapsedSec", "duelAlexHp", "duelMiaHp", "duelRound", "partyRated"]
+        .forEach((k) => { if (g[k] !== undefined && g[k] !== null) state[k] = g[k]; });
+      if (g.questDone) Object.assign(state.questDone, g.questDone);
+      if (g.ratings) state.ratings = g.ratings;
+      // old saves: a rating was already submitted for the Socrates quest
+      if (g.partyRated && !state.ratings.socrates) state.ratings.socrates = { diff: 4, use: 5, feedback: "", at: Date.now() };
+    }
+    function applySnapshot(d) {
+      if (!d) return;
+      if (d.user) Object.assign(DATA.user, d.user);
+      if (Array.isArray(d.myPosts)) DATA.myPosts = d.myPosts;
+      if (Array.isArray(d.liked)) DATA.liked = d.liked;
+      applyGame(d.game);
+      state.dragonLogged = true; // do not re-log an already finished game
+      evaluateDragonGameEnd(true);
+      renderDragonQuestion(); renderBalloonWave(); renderLabyrinthFork(); renderDuelRound(); renderCrewCards(); renderRatingPanel();
+      syncStats(); renderCharacter();
+      if (typeof renderIx === "function") renderIx();
+    }
+    function persistAll() {
+      try { localStorage.setItem(LS_KEY, JSON.stringify(snapshot())); } catch (_) {}
+      clearTimeout(pushTimer);
+      pushTimer = setTimeout(pushState, 400);
+    }
+    async function pushState() {
+      try {
+        const res = await fetch("/api/state", { method: "PUT", headers: API_HEADERS, body: JSON.stringify(snapshot()) });
+        setSyncStatus(res.ok);
+      } catch (_) { setSyncStatus(false); }
+    }
+    async function pullState() {
+      try {
+        const res = await fetch("/api/state");
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        applySnapshot(await res.json());
+        setSyncStatus(true);
+      } catch (_) { setSyncStatus(false); }
+    }
+    // kept for old call sites: GET = load from server, anything else = save
+    async function syncBackend(endpoint, method) {
+      if (method === "GET") return pullState();
+      persistAll();
+    }
+    function logGame(game, outcome) {
+      fetch("/api/games/" + game + "/finish", {
+        method: "POST", headers: API_HEADERS,
+        body: JSON.stringify({ outcome, player_hp: state.hp, enemy_hp: state.dragonHp })
+      }).catch(() => {});
+    }
+
+    function awardXp(amount, reason) {
+      state.xp += amount;
+      while (state.xp >= state.xpGoal) {
+        state.xp -= state.xpGoal;
+        state.level += 1;
+        showToast(`🎉 Level Up! You reached Level ${state.level}!`);
+      }
+      syncStats();
+      syncBackend("/api/state", "PATCH", {
+        xp: state.xp,
+        hp: state.hp,
+        coins: state.coins,
+        dragonHp: state.dragonHp
+      });
+      if (reason) showToast(reason);
+    }
+
+    function navigateTo(viewName) {
+      state.view = viewName;
+      document.querySelectorAll(".sq-view").forEach((v) => v.classList.remove("active"));
+      const target = document.getElementById("view-" + viewName);
+      if (target) target.classList.add("active");
+
+      const navMap = {
+        today: "today",
+        quests: "quests",
+        party: "party",
+        workshop: "party",
+        library: "library",
+        duels: "duels",
+        rewards: "rewards", profile: "profile", feed: "feed", leaderboard: "leaderboard",
+        "quest-dragon": "quests",
+        "quest-balloon": "quests",
+        "quest-labyrinth": "quests",
+        "quest-socrates": "quests"
+      };
+      const activeNav = navMap[viewName] || "today";
+      document.querySelectorAll(".sq-nav-item").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.nav === activeNav);
+      });
+
+      const ctxBox = document.getElementById("sq-sidebar-context");
+      if (viewName === "party" || viewName === "workshop") {
+        ctxBox.innerHTML = '<div class="sq-crew-box"><div class="sq-crew-box-title">CAMPUS CREW</div><div class="sq-muted-xs">3 members · Private</div></div>';
+      } else if (viewName === "library") {
+        ctxBox.innerHTML = '<div class="sq-crew-box"><div class="sq-crew-box-title">MY STUDY SPACE</div><div class="sq-muted-xs">Your uploads stay in your private library.</div></div>';
+      } else {
+        ctxBox.innerHTML = "";
+      }
+
+      if (viewName === "quest-dragon") {
+        checkDailyVictoryLock();
+        evaluateDragonGameEnd();
+        renderDragonQuestion();
+        renderDragonGameEndUI();
+      }
+      if (viewName === "quest-balloon") renderBalloonWave();
+      if (viewName === "quest-labyrinth") renderLabyrinthFork();
+      if (viewName === "duels") renderDuelRound();
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function renderCharacter() {
+      const box = document.getElementById("today-character");
+      if (box && typeof characterCard === "function") box.innerHTML = characterCard();
+    }
+
+    function syncStats() {
+      const pct = Math.min(100, Math.round((state.xp / state.xpGoal) * 100));
+      document.getElementById("dash-level").textContent = String(state.level);
+      document.getElementById("dash-next-level").textContent = `Level ${state.level + 1}`;
+      document.getElementById("sidebar-level-sub").textContent = `Knowledge seeker · Level ${state.level}`;
+      document.getElementById("dash-xp-text").textContent = `${state.xp.toLocaleString()} / ${state.xpGoal.toLocaleString()} XP`;
+      document.getElementById("dash-xp-bar").style.width = `${pct}%`;
+      document.getElementById("dash-xp-remaining").textContent = `${Math.max(0, state.xpGoal - state.xp)} XP to your next unlock`;
+      document.getElementById("hp-label").textContent = `${state.hp} / 100 HP`;
+      document.getElementById("cheat-days-label").textContent = `${state.cheatDays} cheat days banked`;
+      document.getElementById("commitments-label").textContent = `${state.commitmentsTowardCheatDay} / 5 commitments toward your next day`;
+
+      const safePlayerHp = Math.max(0, Math.min(100, state.hp));
+      const safeDragonHp = Math.max(0, Math.min(100, state.dragonHp));
+      document.getElementById("dragon-player-hp-text").textContent = `${safePlayerHp} / 100`;
+      document.getElementById("dragon-player-hp-bar").style.width = `${safePlayerHp}%`;
+      document.getElementById("dragon-boss-hp-text").textContent = `${safeDragonHp} / 100`;
+      document.getElementById("dragon-boss-hp-bar").style.width = `${safeDragonHp}%`;
+      document.getElementById("today-dragon-hp-note").textContent = `Dragon HP ${safeDragonHp} / 100 · Mixed formats · Timed hit / evade`;
+
+      if (state.questDone.dragon || state.dragonOutcome === "victory" || safeDragonHp === 0) {
+        state.questDone.dragon = true;
+        document.getElementById("today-dragon-title").classList.add("struck");
+        document.getElementById("btn-today-dragon").textContent = "Defeated ✓ · Replay";
+      } else {
+        document.getElementById("today-dragon-title").classList.remove("struck");
+        document.getElementById("btn-today-dragon").textContent = "Continue battle";
+      }
+
+      const doneCount = Object.values(state.questDone).filter(Boolean).length;
+      document.getElementById("today-quests-count").textContent = `${doneCount} / 3`;
+
+      const labCard = document.getElementById("today-card-labyrinth");
+      const chkQ2 = document.getElementById("chk-q2");
+      const labTitle = document.getElementById("today-lab-title");
+      labCard.classList.toggle("completed", state.questDone.labyrinth);
+      chkQ2.classList.toggle("checked", state.questDone.labyrinth);
+      chkQ2.textContent = state.questDone.labyrinth ? "✓" : "";
+      labTitle.classList.toggle("struck", state.questDone.labyrinth);
+
+      const balCard = document.getElementById("today-card-balloon");
+      const chkQ3 = document.getElementById("chk-q3");
+      const balTitle = document.getElementById("today-bal-title");
+      balCard.classList.toggle("completed", state.questDone.balloon);
+      chkQ3.classList.toggle("checked", state.questDone.balloon);
+      chkQ3.textContent = state.questDone.balloon ? "✓" : "";
+      balTitle.classList.toggle("struck", state.questDone.balloon);
+
+      
+      document.getElementById("party-coins-title").textContent = `${state.coins} creator coins · ${state.cheatDays} cheat days`;
+      document.getElementById("ws-coins-banner").textContent = `${state.coins} creator coins available`;
+
+      const weeklyXp = player("alex").weeklyXp;
+      document.getElementById("party-you-xp").textContent = `${weeklyXp.toLocaleString()} XP`;
+      const diffToSecond = Math.max(0, 1600 - weeklyXp);
+      document.getElementById("party-rank-note").textContent = diffToSecond > 0
+        ? `↗ Just ${diffToSecond} XP from second place. You've got this.`
+        : "🏆 You overtook second place on the weekly leaderboard!";
+    }
+
+    /* ---------------- DRAGON BATTLE QUEST (TIMER + END CONDITIONS) ---------------- */
+    let selectedDragonOpt = null;
+    let lastDragonTickPerf = performance.now();
+
+    function checkDailyVictoryLock() { /* daily lock removed: the battle can always be restarted */ }
+
+    const MSG_WIN = "🏆 Victory! The dragon is defeated. Press “Play again” to start a new battle.";
+    const MSG_LOSE = "💀 Defeat! You ran out of health. Game over — press “Play again” to start over.";
+
+    function evaluateDragonGameEnd(silent = false) {
+      if (state.dragonHp <= 0) {
+        state.dragonHp = 0;
+        state.dragonOutcome = "victory";
+        state.dragonOutcomeMsg = MSG_WIN;
+      } else if (state.hp <= 0) {
+        state.hp = 0;
+        state.dragonOutcome = "defeat";
+        state.dragonOutcomeMsg = MSG_LOSE;
+      } else {
+        state.dragonOutcome = null;
+        state.dragonOutcomeMsg = "";
+      }
+      if (state.dragonOutcome && !state.dragonLogged) {
+        state.dragonLogged = true;
+        if (!silent) logGame("dragon", state.dragonOutcome);
+      }
+      renderDragonGameEndUI();
+    }
+
+    function renderDragonGameEndUI() {
+      const banner = document.getElementById("dragon-game-end-banner");
+      const answerBtn = document.getElementById("btn-answer-evade");
+      const nextBtn = document.getElementById("btn-dragon-next-q");
+      const inputEl = document.getElementById("dragon-answer-input");
+      const over = !!state.dragonOutcome;
+      if (banner) {
+        banner.style.display = over ? "block" : "none";
+        banner.className = `sq-game-over-banner ${state.dragonOutcome || ""}`;
+        banner.innerHTML = over ? `${state.dragonOutcomeMsg} <button type="button" class="sq-btn-primary sq-btn-sm" id="btn-dragon-again" style="margin-left:10px">Play again</button>` : "";
+      }
+      if (over) state.dragonTimerSec = 0;
+      if (answerBtn) answerBtn.disabled = over;
+      if (nextBtn) nextBtn.disabled = over;
+      if (inputEl) inputEl.disabled = over;
+      document.querySelectorAll("#dragon-opt-list .sq-option-btn").forEach((b) => { b.disabled = over; });
+    }
+
+    function updateDragonTimerVisuals() {
+      const timerEl = document.getElementById("dragon-timer");
+      const barEl = document.getElementById("dragon-evade-bar");
+      const safe = Math.max(0, state.dragonTimerSec);
+      const whole = Math.floor(safe);
+      const tenths = Math.floor((safe - whole) * 10);
+      if (timerEl) timerEl.textContent = `00:${String(whole).padStart(2, "0")}.${tenths}`;
+      if (barEl) barEl.style.width = `${Math.min(100, (safe / 8.0) * 100)}%`;
+    }
+
+    function renderDragonQuestion() {
+      const q = DRAGON_QUESTIONS[state.dragonQIndex % DRAGON_QUESTIONS.length];
+      selectedDragonOpt = null;
+      document.getElementById("dragon-round-label").textContent = `DRAGON BATTLE · QUESTION ${(state.dragonQIndex % DRAGON_QUESTIONS.length) + 1} / ${DRAGON_QUESTIONS.length}`;
+      document.querySelectorAll("#dragon-formats .sq-fmt-btn").forEach((b) => {
+        b.classList.toggle("active", b.dataset.fmt === q.fmt);
+      });
+
+      const container = document.getElementById("dragon-question-body");
+      if (q.fmt === "short") {
+        container.innerHTML = `
+          <h2 class="sq-question-title">${q.title}</h2>
+          <p class="sq-muted-sm">${q.prompt}</p>
+          <input type="text" id="dragon-answer-input" class="sq-input sq-mt-sm" placeholder="${q.placeholder}" value="${q.defaultVal}" />
+        `;
+      } else {
+        container.innerHTML = `
+          <h2 class="sq-question-title">${q.title}</h2>
+          <p class="sq-muted-sm">${q.prompt}</p>
+          <div class="sq-option-list" id="dragon-opt-list">
+            ${q.options.map((opt, idx) => `<button type="button" class="sq-option-btn" data-idx="${idx}">${opt}</button>`).join("")}
+          </div>
+        `;
+        container.querySelectorAll(".sq-option-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            if (state.dragonOutcome) return;
+            container.querySelectorAll(".sq-option-btn").forEach((b) => b.classList.remove("selected"));
+            btn.classList.add("selected");
+            selectedDragonOpt = Number(btn.dataset.idx);
+          });
+        });
+      }
+
+      if (!state.dragonOutcome) {
+        state.dragonTimerSec = 8.0;
+      } else {
+        state.dragonTimerSec = 0.0;
+      }
+      lastDragonTickPerf = performance.now();
+      updateDragonTimerVisuals();
+      renderDragonGameEndUI();
+    }
+
+    setInterval(() => {
+      const nowPerf = performance.now();
+      const dt = (nowPerf - lastDragonTickPerf) / 1000;
+      lastDragonTickPerf = nowPerf;
+
+      if (state.view !== "quest-dragon") return;
+
+      if (state.dragonOutcome) {
+        state.dragonTimerSec = 0;
+        updateDragonTimerVisuals();
+        return;
+      }
+
+      state.dragonTimerSec = Math.max(0, state.dragonTimerSec - dt);
+      updateDragonTimerVisuals();
+
+      if (state.dragonTimerSec <= 0) {
+        state.hp = Math.max(0, state.hp - 10);
+        document.getElementById("dragon-strike-label").textContent = "DRAGON FLAME";
+        document.getElementById("dragon-strike-val").textContent = "−10 HP";
+        document.getElementById("dragon-strike-sub").textContent = "Time ran out!";
+        evaluateDragonGameEnd();
+        syncStats();
+
+        if (!state.dragonOutcome) {
+          state.dragonTimerSec = 8.0;
+          lastDragonTickPerf = performance.now();
+          updateDragonTimerVisuals();
+          showToast("Time ran out! Dragon flame hits you for −10 HP.");
+        } else {
+          showToast(state.dragonOutcomeMsg);
+        }
+      }
+    }, 100);
+
+    document.getElementById("btn-answer-evade").addEventListener("click", () => {
+      if (state.dragonOutcome) {
+        showToast(state.dragonOutcomeMsg);
+        return;
+      }
+      const q = DRAGON_QUESTIONS[state.dragonQIndex % DRAGON_QUESTIONS.length];
+      let isCorrect = false;
+      if (q.fmt === "short") {
+        const inp = document.getElementById("dragon-answer-input");
+        isCorrect = inp ? q.check(inp.value.trim()) : false;
+      } else {
+        isCorrect = selectedDragonOpt === q.correctIdx;
+      }
+
+      if (isCorrect) {
+        state.dragonHp = Math.max(0, state.dragonHp - 20);
+        document.getElementById("dragon-strike-label").textContent = "RECALL STRIKE";
+        document.getElementById("dragon-strike-val").textContent = "−20";
+        document.getElementById("dragon-strike-sub").textContent = "Evaded & countered!";
+        if (state.dragonHp === 0) {
+          evaluateDragonGameEnd();
+          if (!state.questDone.dragon) {
+            state.questDone.dragon = true;
+            addFeedPost({ type: "quest", text: "completed “Recall the forgetting curve”", detail: "Dragon battle · Psychology", xp: "+60 XP" });
+            awardXp(60, "🏆 Victory! The dragon is defeated (+60 XP).");
+          } else {
+            syncStats();
+            showToast("🏆 Victory! The dragon is defeated again.");
+          }
+        } else {
+          state.dragonQIndex += 1;
+          renderDragonQuestion();
+          syncStats();
+          showToast("Direct hit! Dragon takes −20 HP.");
+        }
+      } else {
+        state.hp = Math.max(0, state.hp - 10);
+        document.getElementById("dragon-strike-label").textContent = "MISSED EVADE";
+        document.getElementById("dragon-strike-val").textContent = "−10 HP";
+        document.getElementById("dragon-strike-sub").textContent = "Wrong answer";
+        evaluateDragonGameEnd();
+        syncStats();
+        showToast(state.dragonOutcome ? state.dragonOutcomeMsg : "Incorrect! You take −10 HP.");
+      }
+    });
+
+    document.getElementById("btn-dragon-next-q").addEventListener("click", () => {
+      if (state.dragonOutcome) {
+        showToast(state.dragonOutcomeMsg);
+        return;
+      }
+      state.dragonQIndex += 1;
+      renderDragonQuestion();
+    });
+
+    document.getElementById("btn-dragon-reset").addEventListener("click", () => {
+      state.dragonHp = 100;
+      state.hp = DATA.user.maxHp;
+      state.dragonQIndex = 0;
+      state.dragonOutcome = null;
+      state.dragonOutcomeMsg = "";
+      state.dragonLogged = false;
+      document.getElementById("dragon-strike-label").textContent = "RECALL STRIKE";
+      document.getElementById("dragon-strike-val").textContent = "−20";
+      document.getElementById("dragon-strike-sub").textContent = "Last correct answer";
+      renderDragonQuestion();
+      syncStats();
+      fetch("/api/games/dragon/restart", { method: "POST", headers: API_HEADERS }).catch(() => {});
+      showToast("Battle restarted: player and dragon health restored to 100 / 100.");
+    });
+
+    /* ---------------- BALLOON BARRAGE QUEST ---------------- */
+    function renderBalloonWave() {
+      const wave = BALLOON_WAVES[state.balloonWave];
+      state.balloonHitsInWave = 0;
+      document.getElementById("balloon-wave-title").textContent = `BALLOON BARRAGE · WAVE ${state.balloonWave + 1} / ${BALLOON_WAVES.length}`;
+      document.getElementById("balloon-score-label").textContent = `0 / 2 correct balloons hit`;
+      document.getElementById("balloon-prompt-title").textContent = wave.prompt;
+      document.getElementById("balloon-footer-status").textContent = `Wave ${state.balloonWave + 1} / ${BALLOON_WAVES.length} · Player HP ${state.hp} / 100`;
+      document.getElementById("btn-balloon-next-wave").style.display = "none";
+
+      const arena = document.getElementById("balloon-arena");
+      arena.innerHTML = wave.targets.map((t) => `
+        <button type="button" class="sq-balloon ${t.color}" data-tid="${t.id}">${t.label}</button>
+      `).join("");
+
+      arena.querySelectorAll(".sq-balloon").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const target = wave.targets.find((x) => x.id === btn.dataset.tid);
+          if (!target) return;
+          if (state.hp <= 0) { showToast("You are out of health — restart the Dragon battle to restore HP."); return; }
+          btn.classList.add("popped");
+          const fb = document.getElementById("balloon-feedback");
+          if (target.correct) {
+            state.balloonHitsInWave += 1;
+            document.getElementById("balloon-score-label").textContent = `${state.balloonHitsInWave} / 2 correct balloons hit`;
+            fb.innerHTML = `<div class="sq-feedback-title">${target.label} popped! (+1 correct)</div><p class="sq-muted-sm">${target.info}</p>`;
+            if (state.balloonHitsInWave >= 2) {
+              if (state.balloonWave < BALLOON_WAVES.length - 1) {
+                document.getElementById("btn-balloon-next-wave").style.display = "inline-block";
+                showToast("Wave cleared! Click Next wave.");
+              } else {
+                state.questDone.balloon = true;
+                addFeedPost({ type: "quest", text: "completed “Review flashcards”", detail: "Balloon barrage · Biology", xp: "+60 XP" });
+                awardXp(60, "🎈 All 3 Balloon Barrage waves cleared! +60 XP!");
+              }
+            }
+          } else {
+            state.hp = Math.max(0, state.hp - 5);
+            syncStats();
+            fb.innerHTML = `<div class="sq-feedback-title">Distractor hit: ${target.label} (−5 HP)</div><p class="sq-muted-sm">${target.info}</p>`;
+            showToast("Distractor balloon! −5 HP.");
+          }
+        });
+      });
+    }
+
+    document.getElementById("btn-balloon-next-wave").addEventListener("click", () => {
+      state.balloonWave = (state.balloonWave + 1) % BALLOON_WAVES.length;
+      renderBalloonWave();
+    });
+
+    document.getElementById("btn-balloon-reset").addEventListener("click", () => {
+      state.balloonWave = 0;
+      renderBalloonWave();
+      showToast("Balloon barrage restarted at Wave 1.");
+    });
+
+    /* ---------------- RECALL LABYRINTH QUEST ---------------- */
+    let selectedLabyrinthIdx = 0;
+    function formatElapsed(sec) {
+      const m = String(Math.floor(sec / 60)).padStart(2, "0");
+      const s = String(sec % 60).padStart(2, "0");
+      return `${m}:${s}`;
+    }
+
+    function renderLabyrinthFork() {
+      const fork = LABYRINTH_FORKS[state.labyrinthFork];
+      selectedLabyrinthIdx = 0;
+      document.getElementById("maze-fork-label").textContent = `RECALL LABYRINTH · FORK ${state.labyrinthFork + 1} / ${LABYRINTH_FORKS.length}`;
+      document.getElementById("maze-kicker").textContent = `FORK ${state.labyrinthFork + 1} · YOUR ANSWER CHOOSES THE PATH`;
+      document.getElementById("maze-gates-label").textContent = `Ahead-only view · ${state.labyrinthFork} / ${LABYRINTH_FORKS.length} gates · HP ${state.hp} / 100`;
+      document.getElementById("maze-elapsed-label").textContent = `Elapsed ${formatElapsed(state.labyrinthElapsedSec)}`;
+      document.getElementById("maze-question-text").textContent = fork.question;
+
+      const wrap = document.getElementById("labyrinth-choices");
+      wrap.innerHTML = fork.options.map((opt, idx) => `
+        <button type="button" class="sq-choice-card ${idx === 0 ? "selected" : ""}" data-idx="${idx}">
+          <span class="sq-choice-dir">${opt.dir}</span>
+          <strong class="sq-choice-val">${opt.label}</strong>
+        </button>
+      `).join("");
+
+      wrap.querySelectorAll(".sq-choice-card").forEach((card) => {
+        card.addEventListener("click", () => {
+          wrap.querySelectorAll(".sq-choice-card").forEach((c) => c.classList.remove("selected"));
+          card.classList.add("selected");
+          selectedLabyrinthIdx = Number(card.dataset.idx);
+        });
+      });
+    }
+
+    document.getElementById("btn-choose-passage").addEventListener("click", () => {
+      const fork = LABYRINTH_FORKS[state.labyrinthFork];
+      const chosen = fork.options[selectedLabyrinthIdx];
+      const alertBox = document.getElementById("labyrinth-alert");
+      if (chosen && chosen.correct) {
+        if (state.labyrinthFork < LABYRINTH_FORKS.length - 1) {
+          state.labyrinthFork += 1;
+          alertBox.textContent = `Correct (${chosen.label})! Gate unlocked — advancing to Fork ${state.labyrinthFork + 1}.`;
+          renderLabyrinthFork();
+          showToast("Gate opened!");
+        } else {
+          state.questDone.labyrinth = true;
+          document.getElementById("maze-gates-label").textContent = `Ahead-only view · 4 / 4 gates · EXIT REACHED`;
+          alertBox.textContent = "🎉 Maze completed! All 4 gates solved.";
+          addFeedPost({ type: "quest", text: "completed “Finish problem set”", detail: "Recall labyrinth · Mathematics", xp: "+120 XP" });
+          awardXp(120, "🧭 Recall Labyrinth completed! +120 XP earned!");
+        }
+      } else {
+        state.labyrinthElapsedSec += 30;
+        document.getElementById("maze-elapsed-label").textContent = `Elapsed ${formatElapsed(state.labyrinthElapsedSec)}`;
+        alertBox.textContent = `Dead end (${chosen.label})! +00:30 penalty added (total ${formatElapsed(state.labyrinthElapsedSec)}). Try another passage.`;
+        showToast("Wrong turn: +00:30 penalty.");
+      }
+    });
+
+    document.getElementById("btn-use-hint").addEventListener("click", () => {
+      const fork = LABYRINTH_FORKS[state.labyrinthFork];
+      showToast("Hint: " + fork.hint);
+    });
+
+    document.getElementById("btn-lab-reset").addEventListener("click", () => {
+      state.labyrinthFork = 0;
+      state.labyrinthElapsedSec = 0;
+      state.questDone.labyrinth = false;
+      document.getElementById("labyrinth-alert").textContent = "";
+      renderLabyrinthFork();
+      syncStats();
+      showToast("Returned to Fork 1.");
+    });
+
+    /* ---------------- TALK WITH SOCRATES QUEST ---------------- */
+    const INITIAL_SOCRATES_HTML = `
+      <div class="sq-bubble socrates">
+        <div class="sq-bubble-role">SOCRATES</div>
+        <div>How would you tell whether familiarity with a passage means you can retrieve its ideas without looking?</div>
+      </div>
+      <div class="sq-bubble user">
+        <div class="sq-bubble-role">YOU</div>
+        <div>It feels familiar, so I assumed I knew it.</div>
+      </div>
+      <div class="sq-bubble socrates">
+        <div class="sq-bubble-role">SOCRATES</div>
+        <div>What difference would you expect between recognising a passage and recalling it with the book closed, especially after a delay?</div>
+      </div>
+      <div class="sq-bubble user">
+        <div class="sq-bubble-role">YOU</div>
+        <div>Recognition gives me cues; recall makes me retrieve the idea. Revisiting it after a delay makes that retrieval more demanding.</div>
+      </div>
+      <div class="sq-bubble socrates">
+        <div class="sq-bubble-role">SOCRATES</div>
+        <div>Which observation could challenge that explanation, and what revision schedule would let you test it against an alternative?</div>
+      </div>
+    `;
+
+    function resetSocrates() {
+      state.socratesScore = 2;
+      document.getElementById("socrates-dialogue").innerHTML = INITIAL_SOCRATES_HTML;
+      document.getElementById("socrates-score-badge").textContent = "2 / 4 accurate";
+      document.getElementById("soc-crit-3").classList.remove("done");
+      document.getElementById("soc-crit-3").textContent = "○ Evidence plus a counterexample";
+      document.getElementById("soc-crit-4").classList.remove("done");
+      document.getElementById("soc-crit-4").textContent = "○ A defensible practical comparison";
+    }
+
+    document.getElementById("btn-socrates-reply").addEventListener("click", () => {
+      const input = document.getElementById("socrates-input");
+      const text = input.value.trim();
+      if (!text) return;
+      const dlg = document.getElementById("socrates-dialogue");
+      dlg.insertAdjacentHTML("beforeend", `
+        <div class="sq-bubble user">
+          <div class="sq-bubble-role">YOU</div>
+          <div>${text.replace(/</g, "&lt;")}</div>
+        </div>
+      `);
+
+      if (state.socratesScore < 4) {
+        state.socratesScore += 1;
+        document.getElementById("socrates-score-badge").textContent = `${state.socratesScore} / 4 accurate`;
+        if (state.socratesScore >= 3) {
+          const c3 = document.getElementById("soc-crit-3");
+          c3.classList.add("done");
+          c3.textContent = "✓ Evidence plus a counterexample";
+        }
+        if (state.socratesScore === 4) {
+          const c4 = document.getElementById("soc-crit-4");
+          c4.classList.add("done");
+          c4.textContent = "✓ A defensible practical comparison";
+          dlg.insertAdjacentHTML("beforeend", `
+            <div class="sq-bubble socrates">
+              <div class="sq-bubble-role">SOCRATES</div>
+              <div>Well reasoned. You isolated retrieval effort from passive familiarity and specified a testable comparison. Mastery standard met!</div>
+            </div>
+          `);
+          addFeedPost({ type: "quest", text: "completed “Explain spaced repetition”", detail: "Socrates · 4 / 4 accurate", xp: "+90 XP" });
+          awardXp(90, "🏛️ Socratic inquiry completed (4/4)! +90 XP earned!");
+        } else {
+          dlg.insertAdjacentHTML("beforeend", `
+            <div class="sq-bubble socrates">
+              <div class="sq-bubble-role">SOCRATES</div>
+              <div>Strong counterexample (3 / 4). Now give one concrete weekly revision schedule you would actually follow before an exam.</div>
+            </div>
+          `);
+          showToast("Criterion 3/4 satisfied! Add one practical comparison.");
+        }
+      }
+      input.value = "";
+    });
+
+    document.getElementById("btn-ask-another").addEventListener("click", () => {
+      showToast("Tip: Mention testing after 1 day, 3 days, and 7 days vs rereading.");
+    });
+
+    document.getElementById("btn-socrates-reset").addEventListener("click", () => {
+      resetSocrates();
+      showToast("Socratic dialogue reset.");
+    });
+
+    /* ---------------- BATTLE OF WITS DUEL (live parry timer + end conditions) ---------------- */
+    const DUEL_TIME = 8.0;
+    let selectedDuelOpt = 0;
+    let lastDuelTick = performance.now();
+    state.duelTimerSec = DUEL_TIME;
+    state.duelOutcome = null; // null | "victory" | "defeat"
+    state.duelQIdx = 0;
+
+    function fmtTimer(sec) {
+      const safe = Math.max(0, sec);
+      const whole = Math.floor(safe);
+      return `00:${String(whole).padStart(2, "0")}.${Math.floor((safe - whole) * 10)}`;
+    }
+
+    function updateDuelTimerVisuals() {
+      const txt = fmtTimer(state.duelTimerSec);
+      document.getElementById("duel-timer-badge").textContent = `Parry: ${txt}`;
+      document.getElementById("duel-round-timer").textContent = txt;
+    }
+
+    function evaluateDuelEnd() {
+      if (state.duelMiaHp <= 0) state.duelOutcome = "victory";
+      else if (state.duelAlexHp <= 0) state.duelOutcome = "defeat";
+      else state.duelOutcome = null;
+
+      const over = !!state.duelOutcome;
+      const banner = document.getElementById("duel-game-end-banner");
+      banner.style.display = over ? "block" : "none";
+      banner.className = `sq-game-over-banner ${state.duelOutcome || ""}`;
+      banner.innerHTML = !over ? "" : (state.duelOutcome === "victory"
+        ? "⚔ Victory! You defeated Mia in Battle of Wits. Press “New duel” to play again."
+        : "💀 Defeat! You ran out of battle HP. Press “New duel” to start over.")
+        + ` <button type="button" class="sq-btn-primary sq-btn-sm" id="btn-duel-again" style="margin-left:10px">New duel</button>`;
+      document.getElementById("btn-lock-pairs").disabled = over;
+      document.querySelectorAll("#duel-options .sq-option-btn").forEach((b) => { b.disabled = over; });
+      if (over) state.duelTimerSec = 0;
+    }
+
+    function renderDuelRound() {
+      const q = DUEL_ROUNDS[state.duelQIdx % DUEL_ROUNDS.length];
+      selectedDuelOpt = 0;
+      document.getElementById("duel-round-badge").textContent = `XP DUEL · ROUND ${Math.min(5, state.duelRound)} / 5`;
+      document.getElementById("duel-alex-hp").textContent = `${state.duelAlexHp} / 100`;
+      document.getElementById("duel-alex-bar").style.width = `${state.duelAlexHp}%`;
+      document.getElementById("duel-mia-hp").textContent = `${state.duelMiaHp} / 100`;
+      document.getElementById("duel-mia-bar").style.width = `${state.duelMiaHp}%`;
+      document.getElementById("duel-question-title").textContent = q.question;
+
+      const wrap = document.getElementById("duel-options");
+      wrap.innerHTML = q.options.map((opt, idx) => `
+        <button type="button" class="sq-option-btn ${idx === 0 ? "selected" : ""}" data-idx="${idx}">${opt}</button>
+      `).join("");
+      wrap.querySelectorAll(".sq-option-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          if (state.duelOutcome) return;
+          wrap.querySelectorAll(".sq-option-btn").forEach((b) => b.classList.remove("selected"));
+          btn.classList.add("selected");
+          selectedDuelOpt = Number(btn.dataset.idx);
+        });
+      });
+
+      state.duelTimerSec = DUEL_TIME;
+      lastDuelTick = performance.now();
+      evaluateDuelEnd();
+      updateDuelTimerVisuals();
+    }
+
+    // One round is over: correct answer, wrong answer or timeout
+    function resolveDuelRound(correct, timedOut) {
+      if (state.duelOutcome) return;
+      if (correct) {
+        state.duelMiaHp = Math.max(0, state.duelMiaHp - 20);
+        document.getElementById("duel-strike-title").textContent = "PARRY & STRIKE";
+        document.getElementById("duel-strike-val").textContent = "−20";
+        document.getElementById("duel-strike-sub").textContent = "Mia takes −20 battle HP";
+      } else {
+        state.duelAlexHp = Math.max(0, state.duelAlexHp - 20);
+        document.getElementById("duel-strike-title").textContent = "MIA HITS";
+        document.getElementById("duel-strike-val").textContent = "−20 HP";
+        document.getElementById("duel-strike-sub").textContent = timedOut ? "Time ran out!" : "Wrong parry choice";
+      }
+      state.duelRound = Math.min(5, state.duelRound + 1);
+      state.duelQIdx += 1;
+      renderDuelRound(); // also resets the timer and checks the end conditions
+
+      if (state.duelOutcome === "victory") {
+        addFeedPost({ type: "duel", text: "won a Battle of wits against Mia", detail: "XP duel", xp: "+40 XP" });
+        awardXp(40, "⚔ Victory! You defeated Mia in Battle of Wits (+40 XP)!");
+      } else if (state.duelOutcome === "defeat") {
+        addFeedPost({ type: "duel", text: "lost a Battle of wits against Mia", detail: "XP duel", xp: "−10 HP" });
+        state.hp = Math.max(0, state.hp - 10);
+        syncStats();
+        showToast("💀 Defeat! Your battle HP ran out (−10 player HP). Click New duel.");
+      } else if (correct) {
+        showToast("Parried! Mia loses 20 battle HP.");
+      } else {
+        showToast(timedOut ? "Time ran out! Mia hits you for −20 battle HP." : "Wrong answer! Mia hits you for −20 battle HP.");
+      }
+      persistAll();
+    }
+
+    setInterval(() => {
+      const now = performance.now();
+      const dt = Math.min(0.5, (now - lastDuelTick) / 1000);
+      lastDuelTick = now;
+      if (state.view !== "duels" || state.duelOutcome) return;
+      state.duelTimerSec = Math.max(0, state.duelTimerSec - dt);
+      updateDuelTimerVisuals();
+      if (state.duelTimerSec <= 0) resolveDuelRound(false, true);
+    }, 100);
+
+    document.getElementById("btn-lock-pairs").addEventListener("click", () => {
+      if (state.duelOutcome === "defeat") { showToast("You lost the duel. Click New duel to start over."); return; }
+      if (state.duelOutcome === "victory") { showToast("You already won this duel! Click New duel to play again."); return; }
+      const q = DUEL_ROUNDS[state.duelQIdx % DUEL_ROUNDS.length];
+      resolveDuelRound(selectedDuelOpt === q.correctIdx, false);
+    });
+
+    document.getElementById("btn-duel-reset").addEventListener("click", () => {
+      state.duelAlexHp = 100;
+      state.duelMiaHp = 100;
+      state.duelRound = 1;
+      state.duelQIdx = 0;
+      document.getElementById("duel-strike-title").textContent = "RECALL STRIKE";
+      document.getElementById("duel-strike-val").textContent = "−20";
+      document.getElementById("duel-strike-sub").textContent = "Answer before the timer runs out";
+      renderDuelRound();
+      persistAll();
+      showToast("New duel started: both fighters at 100 / 100 HP.");
+    });
+
+    document.getElementById("btn-queue-challenge").addEventListener("click", () => {
+      const qTxt = document.getElementById("duel-custom-q").value.trim();
+      showToast(`Challenge queued for Mia: "${qTxt || "Retrieval order"}"`);
+    });
+
+    /* ---------------- GENERAL NAVIGATION & CONTROLS ---------------- */
+    document.querySelectorAll("[data-nav]").forEach((el) => {
+      el.addEventListener("click", (e) => {
+        e.preventDefault();
+        navigateTo(el.dataset.nav);
+      });
+    });
+
+    document.querySelectorAll("[data-open-quest]").forEach((el) => {
+      el.addEventListener("click", () => navigateTo("quest-" + el.dataset.openQuest));
+    });
+
+    document.querySelectorAll("[data-toggle-done]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const key = btn.dataset.toggleDone;
+        state.questDone[key] = !state.questDone[key];
+        if (state.questDone[key]) {
+          awardXp(key === "labyrinth" ? 120 : 50, "Quest marked complete!");
+        } else {
+          syncStats();
+        }
+      });
+    });
+
+    
+    
+    
+    ["btn-use-cheat-today", "btn-use-cheat-party", "btn-cheat-dragon", "btn-use-cheat-rewards"].forEach((id) => {
+      const btn = document.getElementById(id);
+      if (btn) {
+        btn.addEventListener("click", () => {
+          if (state.cheatDays > 0) {
+            state.cheatDays -= 1;
+            DATA.user.pausedUntil = Date.now() + 24 * 3600 * 1000;
+            syncStats();
+            showToast("Cheat day activated: deadlines & HP damage paused for 24h.");
+          } else {
+            showToast("No cheat days banked yet — complete 5 commitments to earn one!");
+          }
+        });
+      }
+    });
+
+    document.querySelectorAll("#party-filters .sq-pill-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("#party-filters .sq-pill-btn").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        const filter = btn.dataset.filter;
+        document.querySelectorAll(".sq-crew-quest").forEach((card) => {
+          const cat = card.dataset.category;
+          card.style.display = (filter === "all" || cat === filter) ? "" : "none";
+        });
+      });
+    });
+
+/* ---------------- PEER RATINGS (one rating per quest, locked afterwards) ---------------- */
+    const RATE_QUESTS = {
+      socrates:  { name: "Explain spaced repetition", icon: "🏛️", meta: "Socrates · Hard 4/5 · 35 min · by Mia Chen", mine: false, received: 1 },
+      balloon:   { name: "Practice biology diagrams", icon: "🎈", meta: "Balloon barrage · Biology · 25 min · by Noah Williams", mine: false, received: 2 },
+      labyrinth: { name: "Finish problem set", icon: "🗺️", meta: "Recall labyrinth · Mathematics · 40 min · by You", mine: true, received: 2 }
+    };
+    const rateDraft = {};
+    const RATE_DEFAULT = () => ({ diff: 4, use: 5, feedback: "" });
+
+    function receivedCount(id) { return RATE_QUESTS[id].received + (state.ratings[id] ? 1 : 0); }
+    // open = you can rate it · rated = you already did · closed = 2/2 peers rated · own = your quest
+    function ratingStatus(id) {
+      if (RATE_QUESTS[id].mine) return "own";
+      if (state.ratings[id]) return "rated";
+      if (receivedCount(id) >= 2) return "closed";
+      return "open";
+    }
+
+    function setScale(scaleId, valId, val, locked) {
+      document.querySelectorAll(`#${scaleId} .sq-scale-btn`).forEach((b) => {
+        b.classList.toggle("active", Number(b.dataset.val) === val);
+        b.disabled = locked;
+      });
+      document.getElementById(valId).textContent = `${val} / 5`;
+    }
+
+    function renderRatingPanel() {
+      if (!RATE_QUESTS[state.ratingSel]) state.ratingSel = "socrates";
+      const id = state.ratingSel;
+      const q = RATE_QUESTS[id];
+      const status = ratingStatus(id);
+      const saved = state.ratings[id];
+      if (!saved && !rateDraft[id]) rateDraft[id] = RATE_DEFAULT();
+      const d = saved || rateDraft[id];
+      const locked = status !== "open";
+
+      const picker = document.getElementById("rate-picker");
+      picker.innerHTML = Object.keys(RATE_QUESTS).map((k) => {
+        const st = ratingStatus(k);
+        const mark = st === "open" ? "" : st === "rated" ? " ✓" : " 🔒";
+        return `<button type="button" class="sq-pill-btn ${k === id ? "active" : ""}" data-rate-quest="${esc(k)}">${RATE_QUESTS[k].icon} ${esc(RATE_QUESTS[k].name)}${mark}</button>`;
+      }).join("");
+
+      document.getElementById("rate-target").innerHTML = `
+        <span class="sq-rate-target-icon">${q.icon}</span>
+        <div><div class="sq-kicker-xs">YOU ARE RATING THIS QUEST</div><strong>${esc(q.name)}</strong><div class="sq-muted-xs">${esc(q.meta)}</div></div>`;
+
+      document.getElementById("rating-turn-label").textContent = { open: "Your turn", rated: "Submitted ✓", closed: "Closed", own: "Your quest" }[status];
+      setScale("diff-scale", "diff-val", d.diff, locked);
+      setScale("use-scale", "use-val", d.use, locked);
+      const fb = document.getElementById("rating-feedback");
+      fb.value = d.feedback || "";
+      fb.disabled = locked;
+      const btn = document.getElementById("btn-submit-rating");
+      btn.disabled = locked;
+      btn.textContent = { open: "Submit rating", rated: "Rating submitted ✓", closed: "Rating closed", own: "You can't rate your own quest" }[status];
+      document.getElementById("rating-note").textContent = {
+        open: "Team XP finalises after both peers rate it. Creator coins are separate from completion XP.",
+        rated: `You rated “${q.name}”. Ratings can't be changed after submitting.`,
+        closed: `“${q.name}” already has 2 of 2 peer ratings, so it is closed for new ratings.`,
+        own: "Peers rate the quests you create. You can't rate your own quest."
+      }[status];
+    }
+
+    function renderCrewCards() {
+      const r = state.ratings.socrates;
+      const top = document.getElementById("crew-socrates-status");
+      const badge = document.getElementById("crew-socrates-badge");
+      if (r) {
+        top.innerHTML = 'Peer reviewed <span class="sq-xp-gain">+90 XP</span>';
+        top.classList.add("green");
+        badge.textContent = `You rated ${r.diff}/5 · ${r.use}/5`;
+        badge.className = "sq-badge-purple";
+      } else {
+        top.innerHTML = 'Needs your rating <span class="sq-pending-right">XP pending</span>';
+        top.classList.remove("green");
+        badge.textContent = "Score pending";
+        badge.className = "sq-badge-gray";
+      }
+      document.getElementById("crew-socrates-ratings").textContent = `${receivedCount("socrates")} of 2 peer ratings received${r ? " · includes yours" : ""}`;
+      document.getElementById("crew-quest-socrates").dataset.category = r ? "all" : "rating";
+
+      const open = Object.keys(RATE_QUESTS).filter((k) => ratingStatus(k) === "open").length;
+      document.getElementById("party-pending-badge").textContent = String(open);
+      document.getElementById("party-needs-rating-count").textContent = String(open);
+      const pill = document.querySelector('#party-filters [data-filter="rating"]');
+      if (pill) pill.textContent = `Needs rating (${open})`;
+
+      Object.keys(RATE_QUESTS).forEach((k) => {
+        const card = document.getElementById("crew-quest-" + k);
+        if (!card) return;
+        let b = card.querySelector(".js-rate-btn");
+        if (!b) {
+          b = document.createElement("button");
+          b.type = "button";
+          b.className = "sq-link-btn js-rate-btn";
+          b.dataset.rateQuest = k;
+          const foot = card.querySelector(".sq-crew-foot");
+          if (foot) foot.appendChild(b);
+        }
+        b.textContent = ratingStatus(k) === "open" ? "Rate this quest" : "View rating";
+      });
+    }
+
+    document.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-rate-quest]");
+      if (!b) return;
+      state.ratingSel = b.dataset.rateQuest;
+      renderRatingPanel();
+      const target = document.getElementById("rate-target");
+      if (!b.closest("#rate-picker") && target.scrollIntoView) target.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+
+    ["diff", "use"].forEach((kind) => {
+      document.querySelectorAll(`#${kind}-scale .sq-scale-btn`).forEach((btn) => {
+        btn.addEventListener("click", () => {
+          if (ratingStatus(state.ratingSel) !== "open") return;
+          rateDraft[state.ratingSel][kind] = Number(btn.dataset.val);
+          renderRatingPanel();
+        });
+      });
+    });
+
+    document.getElementById("rating-feedback").addEventListener("input", (e) => {
+      if (ratingStatus(state.ratingSel) === "open") rateDraft[state.ratingSel].feedback = e.target.value;
+    });
+
+    document.getElementById("btn-submit-rating").addEventListener("click", () => {
+      const id = state.ratingSel;
+      const status = ratingStatus(id);
+      if (status !== "open") {
+        showToast(status === "rated" ? "You already rated this quest." : status === "own" ? "You can't rate your own quest." : "This quest is closed for new ratings.");
+        return;
+      }
+      const d = rateDraft[id] || RATE_DEFAULT();
+      state.ratings[id] = { diff: d.diff, use: d.use, feedback: (d.feedback || "").trim(), at: Date.now() };
+      delete rateDraft[id];
+      addFeedPost({
+        type: "rating",
+        text: `rated the quest “${RATE_QUESTS[id].name}”`,
+        detail: `${RATE_QUESTS[id].meta} · Difficulty ${d.diff}/5 · Usefulness ${d.use}/5`,
+        xp: "+25 XP",
+        quote: (d.feedback || "").trim()
+      });
+      renderCrewCards();
+      renderRatingPanel();
+      awardXp(25, `Rating for “${RATE_QUESTS[id].name}” submitted! +25 XP awarded.`);
+    });
+
+    let selectedWorkshopQuestType = "labyrinth";
+    document.querySelectorAll("#workshop-levels .sq-level-option").forEach((opt) => {
+      opt.addEventListener("click", () => {
+        document.querySelectorAll("#workshop-levels .sq-level-option").forEach((o) => {
+          o.classList.remove("active");
+          const foot = o.querySelector(".sq-opt-foot");
+          if (foot) foot.classList.remove("selected-foot");
+        });
+        opt.classList.add("active");
+        selectedWorkshopQuestType = opt.dataset.questType || "labyrinth";
+        const foot = opt.querySelector(".sq-opt-foot");
+        if (foot) {
+          foot.classList.add("selected-foot");
+          foot.textContent = "SELECTED · " + opt.dataset.level;
+        }
+        document.getElementById("ws-setback-preview").innerHTML = `
+          <strong>${opt.dataset.level} rules</strong>
+          <p>${opt.querySelector(".sq-opt-desc").textContent} Missed commitment: −20 HP.</p>
+        `;
+      });
+    });
+
+    document.getElementById("btn-send-peer").addEventListener("click", () => {
+      const title = document.getElementById("ws-title").value.trim() || "Custom crew quest";
+      const subject = document.getElementById("ws-subject").value.trim() || "Study";
+      const time = document.getElementById("ws-time").value.trim() || "25 min";
+      const prompt = document.getElementById("ws-prompt").value.trim();
+
+      const container = document.getElementById("party-quests-container");
+      const newCard = document.createElement("div");
+      newCard.className = "sq-card sq-crew-quest";
+      newCard.dataset.category = "mine";
+      newCard.innerHTML = `
+        <div class="sq-crew-top-tag">Awaiting peer rating <span class="sq-pending-right">Created just now</span></div>
+        <div class="sq-crew-body">
+          <div class="sq-crew-icon">✨</div>
+          <div class="sq-crew-content">
+            <div class="sq-crew-title-line">
+              <h3>${title.replace(/</g, "&lt;")}</h3>
+              <span class="sq-badge-purple">New · By You</span>
+            </div>
+            <div class="sq-quest-meta">${subject.replace(/</g, "&lt;")} · ${time.replace(/</g, "&lt;")} · Created by You</div>
+            <p class="sq-crew-desc">${prompt.replace(/</g, "&lt;")}</p>
+            <div class="sq-crew-foot">
+              <span class="sq-muted-sm">0 of 2 peer ratings received</span>
+              <button class="sq-btn-primary sq-btn-sm" data-open-quest="${selectedWorkshopQuestType}">Play quest</button>
+            </div>
+          </div>
+        </div>
+      `;
+      newCard.querySelector("[data-open-quest]").addEventListener("click", () => navigateTo("quest-" + selectedWorkshopQuestType));
+      container.appendChild(newCard);
+      const qid = "custom-" + Date.now();
+      newCard.id = "crew-quest-" + qid;
+      RATE_QUESTS[qid] = { name: title, icon: "✨", meta: `${subject} · ${time} · by You`, mine: true, received: 0 };
+      renderCrewCards();
+      renderRatingPanel();
+      document.getElementById("party-shared-count").textContent = String(document.querySelectorAll(".sq-crew-quest").length);
+      addFeedPost({ type: "quest", text: `created a crew quest “${title}”`, detail: `${subject} · ${time}` });
+      showToast(`"${title}" published to Campus crew!`);
+      navigateTo("party");
+    });
+
+    document.getElementById("btn-save-draft").addEventListener("click", () => {
+      showToast("Quest draft saved.");
+    });
+
+    function updateDocCount() {
+      const checked = document.querySelectorAll(".doc-check:checked").length;
+      document.getElementById("selected-docs-count").textContent = `${checked} selected`;
+      document.getElementById("lib-sources-status").textContent = `Exam prep · ${checked} AI-ready sources · Private`;
+    }
+
+    document.querySelectorAll(".doc-check").forEach((chk) => {
+      chk.addEventListener("change", () => {
+        chk.closest(".sq-doc-item").classList.toggle("selected", chk.checked);
+        updateDocCount();
+      });
+    });
+
+    document.getElementById("library-search").addEventListener("input", (e) => {
+      const q = e.target.value.toLowerCase().trim();
+      document.querySelectorAll(".sq-doc-item").forEach((item) => {
+        item.style.display = item.textContent.toLowerCase().includes(q) ? "" : "none";
+      });
+    });
+
+    document.querySelectorAll("#gen-mode-tabs .sq-seg-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("#gen-mode-tabs .sq-seg-btn").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+      });
+    });
+
+    document.getElementById("btn-auto-refresh").addEventListener("click", (e) => {
+      const btn = e.currentTarget;
+      const isOn = btn.classList.toggle("on");
+      btn.textContent = isOn ? "ON" : "OFF";
+      showToast(`Daily auto-refresh turned ${isOn ? "ON" : "OFF"}.`);
+    });
+
+    document.getElementById("btn-generate-3").addEventListener("click", () => {
+      const style = document.getElementById("lib-style-select").value;
+      const checked = document.querySelectorAll(".doc-check:checked").length;
+      document.getElementById("auto-daily-summary").textContent = `${style} · ${checked} sources · Psychology · 25 min`;
+      showToast(`Generated 3 ${style} adventures from ${checked} sources!`);
+      navigateTo("today");
+    });
+
+    ["btn-upload-top", "btn-browse-device", "btn-manage-mat"].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener("click", () => {
+          const list = document.getElementById("doc-list");
+          const item = document.createElement("label");
+          item.className = "sq-doc-item selected";
+          item.innerHTML = `
+            <input type="checkbox" class="doc-check" checked />
+            <span class="sq-doc-badge pdf">PDF</span>
+            <div class="sq-doc-info">
+              <div class="sq-doc-title">Week 5 — Spaced Retrieval Summary.pdf</div>
+              <div class="sq-muted-xs">Psychology · 14 pages · 1.8 MB</div>
+            </div>
+            <span class="sq-status-ready">AI ready</span>
+          `;
+          item.querySelector(".doc-check").addEventListener("change", (e) => {
+            item.classList.toggle("selected", e.target.checked);
+            updateDocCount();
+          });
+          list.prepend(item);
+          document.getElementById("doc-total-count").textContent = `${list.children.length} documents`;
+          updateDocCount();
+          showToast("Added 'Week 5 — Spaced Retrieval Summary.pdf' to Study library!");
+        });
+      }
+    });
+
+    
+    
+    document.getElementById("btn-reset-demo").addEventListener("click", () => {
+      state.ratings = {};
+      Object.keys(rateDraft).forEach((k) => delete rateDraft[k]);
+      renderCrewCards();
+      renderRatingPanel();
+      state.level = 12;
+      state.xp = 750;
+      state.hp = 80;
+      state.coins = 30;
+      state.dragonHp = 100;
+      state.dragonLogged = false;
+      state.dragonQIndex = 0;
+      state.dragonOutcome = null;
+      state.dragonOutcomeMsg = "";
+      state.questDone.dragon = false;
+      state.balloonWave = 0;
+      state.labyrinthFork = 0;
+      state.labyrinthElapsedSec = 525;
+      state.duelAlexHp = 80;
+      state.duelMiaHp = 60;
+      state.duelRound = 3;
+      state.duelQIdx = 0;
+      resetSocrates();
+      renderDragonGameEndUI();
+      syncStats();
+      syncBackend("/api/action", "POST", { action: "reset_state" });
+      showToast("All quests and stats reset to initial state.");
+    });
+
+    document.getElementById("btn-notify").addEventListener("click", () => {
+      showToast("1 quest needs your peer rating in Campus crew.");
+    });
+
+    resetSocrates();
+    renderCharacter();
+    evaluateDragonGameEnd(true);
+    renderDragonQuestion();
+    syncStats();
+    updateDocCount();
+    renderCrewCards();
+    renderRatingPanel();
+    syncBackend("/api/state", "GET");
+  
+  </script>
+  <script>
+
+const IX_PAGES = { profile: renderProfile, rewards: renderRewards, feed: renderFeed, leaderboard: renderLeaderboard };
+function renderIx() { const f = IX_PAGES[state.view]; if (f) f(); renderCharacter(); }
+function render() { renderIx(); syncStats(); }
+
+const _navigateTo = navigateTo;
+navigateTo = function (v) { _navigateTo(v); renderIx(); };
+const _syncStats = syncStats;
+syncStats = function () { _syncStats(); persistAll(); };
+const _awardXp = awardXp;
+awardXp = function (amount, reason) {
+  const me = player('alex'); me.weeklyXp += amount; me.totalXp += amount; DATA.user.questsDone += 1;
+  const lvl0 = DATA.user.level;
+  _awardXp(amount, reason);
+  if (DATA.user.level > lvl0) addFeedPost({ type: 'level', text: `reached Level ${DATA.user.level}`, detail: DATA.user.title });
+};
+
+document.addEventListener('click', (e) => {
+  const go = e.target.closest('[data-go]');
+  if (go) { e.preventDefault(); navigateTo(go.dataset.go); return; }
+  if (e.target.id === 'btn-dragon-again') document.getElementById('btn-dragon-reset').click();
+  if (e.target.id === 'btn-duel-again') document.getElementById('btn-duel-reset').click();
+});
+
+// Live labyrinth clock
+setInterval(() => {
+  if (state.view !== 'quest-labyrinth' || state.questDone.labyrinth) return;
+  state.labyrinthElapsedSec += 1;
+  const el = document.getElementById('maze-elapsed-label');
+  if (el) el.textContent = `Elapsed ${formatElapsed(state.labyrinthElapsedSec)}`;
+}, 1000);
+
+// Restore saved game progress, re-render, then ask the backend (if any)
+applyGame(window.__savedGame);
+evaluateDragonGameEnd(true);
+renderDragonQuestion(); syncStats(); renderCharacter(); renderCrewCards(); renderRatingPanel();
+pullState();
+
+  </script>
+</body>
+</html>
